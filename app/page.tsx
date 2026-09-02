@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect, redirect } from "next/navigation";
 
 export default function home() {
-  redirect("/Front");
+  permanentRedirect("/Front");
 }

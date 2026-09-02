@@ -166,14 +166,14 @@ export default function Footer() {
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="font-semibold">{title}</h3>
+      <h3 className="font-semibold ">{title}</h3>
       <ul className="flex flex-col gap-2.5">
         {items.map((item) => (
           <li
             key={item}
-            className="cursor-pointer text-sm text-gray-700 hover:text-[#10254e]"
+            className="cursor-pointer  text-sm text-gray-700 hover:text-black"
           >
-            {item}
+            <span className="animated-underline">{item}</span>
           </li>
         ))}
       </ul>

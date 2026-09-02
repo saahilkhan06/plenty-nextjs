@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { Phone, Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import "./global.css";
+import DestinationSearch from "./Components/search/DestinationSearch";
+import DepartureSearch from "./Components/search/DepartureSearch";
+import TravelDateSearch from "./Components/search/TravelDateSearch";
+import StayingForSearch from "./Components/search/StayingForSearch";
+import GuestsSearch from "./Components/search/GuestsSearch";
 
 import {
   Moon,
@@ -79,13 +85,22 @@ const CATEGORIES = [
   { img: "photo-1519046904884-53103b34b206", label: "Couple Holidays" },
   { img: "photo-1512389142860-9c449e58a543", label: "Christmas Market" },
 ];
+// const NAV_LINKS = [
+//   "Holidays",
+//   "Destinations",
+//   "Nile Cruise",
+//   "Multi Centre Holidays",
+//   "Blog",
+//   "Help",
+// ];
+
 const NAV_LINKS = [
-  "Holidays",
-  "Destinations",
-  "Nile Cruise",
-  "Multi Centre Holidays",
-  "Blog",
-  "Help",
+  { label: "Holidays", hasDropdown: true },
+  { label: "Destinations", hasDropdown: true },
+  { label: "Nile Cruise", hasDropdown: true },
+  { label: "Multi Centre Holidays", hasDropdown: true },
+  { label: "Blog", hasDropdown: false },
+  { label: "Help", hasDropdown: false },
 ];
 
 export default function HomePage() {
@@ -96,7 +111,7 @@ export default function HomePage() {
   useEffect(() => {
     const id = setInterval(
       () => setSlide((s) => (s + 1) % SLIDES.length),
-      5000,
+      3000,
     );
     return () => clearInterval(id);
   }, []);
@@ -110,10 +125,10 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Image
               src="/assets/img/plenty-logo-2.png"
-              alt="Plenty Holidays"
-              className=""
-              width={250}
-              height={10}
+              alt="Plenty Holidays Logo"
+              width={300}
+              height={50}
+              // className="h-auto" // ✅ width scales automatically
             />
           </div>
 
@@ -155,7 +170,8 @@ export default function HomePage() {
                   0203 994 7646
                 </span>
                 <small className="text-[13px] font-medium">
-                  Everyday <span className="font-bold text-lg">8 am</span> to <span className="font-bold text-lg">11 pm</span>
+                  Everyday <span className="font-bold text-lg">8 am</span> to{" "}
+                  <span className="font-bold text-lg">11 pm</span>
                 </small>
               </span>
             </a>
@@ -176,15 +192,28 @@ export default function HomePage() {
             menuOpen ? "block" : "hidden"
           } border-t border-gray-100 lg:block lg:border-t-0`}
         >
-          <ul className="flex flex-col items-center gap-4 py-4 font-bold lg:flex-row lg:flex-wrap lg:justify-center lg:gap-10">
+          {/* <ul className="flex flex-col items-center gap-4 py-4 font-bold lg:flex-row lg:flex-wrap lg:justify-center lg:gap-10">
             {NAV_LINKS.map((link) => (
               <li key={link}>
-                <a href="#" className="group flex items-center gap-1">
-                  <span className="relative">
+                <a href="#" className="group flex items-center gap-1 ">
+                  <span className="relative animated-underline">
                     {link}
                     <span className="absolute -bottom-1 left-0 h-\[2px\] w-0 bg-current transition-all duration-300 group-hover:w-full" />
                   </span>
                   <ChevronDown size={14} />
+                </a>
+              </li>
+            ))}
+          </ul> */}
+          <ul className="flex flex-col items-center gap-4 py-4 font-bold lg:flex-row lg:flex-wrap lg:justify-center lg:gap-10">
+            {NAV_LINKS.map((link) => (
+              <li key={link.label}>
+                <a href="#" className="group flex items-center gap-1">
+                  <span className="relative animated-underline">
+                    {link.label}
+                    {/* <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-current transition-all duration-300 group-hover:w-full" /> */}
+                  </span>
+                  {link.hasDropdown && <ChevronDown size={14} />}
                 </a>
               </li>
             ))}
@@ -196,12 +225,12 @@ export default function HomePage() {
         <div className="mb-10 flex flex-wrap gap-8">
           <button
             onClick={() => setTab("flight")}
-            className={`flex cursor-pointer items-center gap-2.5 text-xl font-semibold ${
-              tab === "flight" ? "underline" : ""
+            className={`flex cursor-pointer  items-center gap-2.5 text-xl font-semibold ${
+              tab === "flight"
             }`}
           >
             <Umbrella size={24} />
-            Flight + Hotel
+            <span className="animated-underline">Flight + Hotel</span>
           </button>
           <button
             onClick={() => setTab("hotel")}
@@ -210,47 +239,22 @@ export default function HomePage() {
             }`}
           >
             <Hotel size={24} />
-            Hotel Only
+            <span className="animated-underline">Hotel Only</span>
           </button>
         </div>
 
-        <div className="flex flex-wrap items-end gap-4">
-          <SearchField
-            id="destination"
-            label="Destination"
-            icon={MapPin}
-            placeholder="Search Destination"
-          />
-          {tab === "flight" && (
-            <SearchField
-              id="departure"
-              label="Departure"
-              icon={PlaneTakeoff}
-              placeholder="Any London Airport"
-            />
-          )}
-          <SearchField
-            id="travel-date"
-            label="Travel Date"
-            icon={CalendarDays}
-            placeholder="Departure"
-            widthClass="w-full sm:w-[140px]"
-          />
-          <SearchField
-            id="stay"
-            label="Staying For"
-            icon={Moon}
-            placeholder="7 nights"
-            widthClass="w-full sm:w-[140px]"
-          />
-          <SearchField
-            id="guests"
-            label="Guests"
-            icon={BedDouble}
-            placeholder="2 guests/1 Room"
-          />
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-3">
+          <DestinationSearch />
 
-          <button className="h-12 w-full rounded-[10px] bg-[#2171C9] font-semibold text-white transition-colors hover:bg-[#3A8DE4] sm:w-auto sm:px-8">
+          <div className="flex gap-4 lg:contents">
+            <DepartureSearch />
+            <StayingForSearch />
+          </div>
+
+          <TravelDateSearch />
+          <GuestsSearch />
+
+          <button className="h-14 w-full rounded-[20px] bg-[#2171C9] font-bold text-white transition-colors hover:bg-[#3A8DE4] lg:w-auto lg:shrink-0 lg:px-8">
             Search
           </button>
         </div>
@@ -337,12 +341,12 @@ export default function HomePage() {
           Many perspectives, one world
         </h1>
       </div>
-      <section className="mx-auto grid max-w-325 grid-cols-1 gap-4 px-5 py-10 sm:grid-cols-3">
+      <section className="mx-auto grid max-w-325 grid-cols-1 gap-4 px-5 py-10 sm:grid-cols-3 ">
         {CATEGORIES.map((c, i) => (
           <a
             key={`${c.label}-${i}`}
             href="#"
-            className="overflow-hidden rounded-md bg-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_22px_rgba(0,0,0,0.18)]"
+            className="overflow-hidden animated-underline rounded-md bg-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_22px_rgba(0,0,0,0.18)]"
           >
             <Image
               src={`https://images.unsplash.com/${c.img}?w=800&q=80`}
@@ -353,50 +357,47 @@ export default function HomePage() {
             />
 
             <div className="p-4 text-center">
-              <span className="text-lg font-bold text-[#10254e] hover:underline">
+              <span className=" animated-underline text-lg font-bold text-[#10254e] ">
                 {c.label}
               </span>
             </div>
           </a>
         ))}
       </section>
-      {/* Newsletter */}
-
-      {/* <Footer /> */}
     </div>
   );
 }
 
-function SearchField({
-  id,
-  label,
-  icon: Icon,
-  placeholder,
-  widthClass = "w-full sm:w-auto sm:flex-1",
-}: {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  placeholder: string;
-  widthClass?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-2.5 ${widthClass}`}>
-      <label htmlFor={id} className="text-lg font-semibold">
-        {label}
-      </label>
-      <div className="relative">
-        <Icon
-          size={18}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black"
-        />
-        <input
-          id={id}
-          type="text"
-          placeholder={placeholder}
-          className="w-full cursor-pointer rounded-[5px] border-none bg-white p-3.5 pl-11 text-black outline-none"
-        />
-      </div>
-    </div>
-  );
-}
+// function SearchField({
+//   id,
+//   label,
+//   icon: Icon,
+//   placeholder,
+//   widthClass = "w-full sm:w-auto sm:flex-1",
+// }: {
+//   id: string;
+//   label: string;
+//   icon: React.ElementType;
+//   placeholder: string;
+//   widthClass?: string;
+// }) {
+//   return (
+//     <div className={`flex flex-col gap-2.5 ${widthClass}`}>
+//       <label htmlFor={id} className="text-lg font-semibold">
+//         {label}
+//       </label>
+//       <div className="relative">
+//         <Icon
+//           size={18}
+//           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black"
+//         />
+//         <input
+//           id={id}
+//           type="text"
+//           placeholder={placeholder}
+//           className="w-full cursor-pointer rounded-[5px] border-none bg-white p-3.5 pl-11 text-black outline-none"
+//         />
+//       </div>
+//     </div>
+//   );
+// }
