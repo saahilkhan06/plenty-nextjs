@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { BedDouble } from "lucide-react";
 import SearchField from "../ui/SearchField";
 import DropdownActions from "../ui/DropdownActions";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 interface Room {
   adults: number;
@@ -16,6 +17,9 @@ export default function GuestsSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([{ adults: 2, children: 0 }]);
   const [fullWarning, setFullWarning] = useState<Record<number, boolean>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(containerRef, () => setIsOpen(false));
 
   const totalGuests = rooms.reduce((sum, r) => sum + r.adults + r.children, 0);
 
@@ -42,7 +46,6 @@ export default function GuestsSearch() {
       const room = prev[i];
       const roomTotal = room.adults + room.children;
 
-      // Block increments once this room is at capacity
       if (delta > 0 && roomTotal >= MAX_PER_ROOM) {
         setFullWarning((w) => ({ ...w, [i]: true }));
         return prev;
@@ -62,7 +65,7 @@ export default function GuestsSearch() {
   };
 
   return (
-    <div className="w-full sm:w-auto sm:flex-1">
+    <div ref={containerRef} className="w-full sm:w-auto sm:flex-1">
       <SearchField
         id="guests"
         label="Guests"
@@ -147,25 +150,22 @@ export default function GuestsSearch() {
             0203 994 7646
           </a>
         </p>
-
-        <div className="mt-4 flex gap-3">
-          <button
-            type="button"
-            onClick={() =>
-              setRooms((prev) => [...prev, { adults: 1, children: 0 }])
-            }
-            className="flex-1 rounded-md border border-gray-300 py-2.5 font-semibold text-gray-900 hover:bg-gray-50"
-          >
-            + Add Room
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="flex-1 rounded-md bg-yellow-400 py-2.5 font-semibold text-gray-900 hover:bg-yellow-500"
-          >
-            Done
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() =>
+            setRooms((prev) => [...prev, { adults: 1, children: 0 }])
+          }
+          className="mt-3 w-full rounded-md border border-gray-300 py-2.5 font-semibold text-gray-900 hover:bg-gray-50"
+        >
+          + Add Room
+        </button>
+        <DropdownActions
+          onClear={() => {
+            setRooms([{ adults: 2, children: 0 }]);
+            setFullWarning({});
+          }}
+          onDone={() => setIsOpen(false)}
+        />
       </SearchField>
     </div>
   );

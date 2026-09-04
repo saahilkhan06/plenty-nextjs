@@ -10,14 +10,14 @@ export default function DropdownActions({
       <button
         type="button"
         onClick={onClear}
-        className="flex-1 rounded-md border border-gray-300 py-2.5 font-semibold text-gray-900 hover:bg-gray-50"
+        className="flex-1 rounded-md border cursor-pointer border-gray-300 py-2.5 font-semibold text-gray-900 hover:bg-gray-50"
       >
         Clear
       </button>
       <button
         type="button"
         onClick={onDone}
-        className="flex-1 rounded-md bg-yellow-400 py-2.5 font-semibold text-gray-900 hover:bg-yellow-500"
+        className="flex-1 rounded-md bg-yellow-400 py-2.5 font-semibold text-gray-900 hover:bg-yellow-500 cursor-pointer"
       >
         Done
       </button>

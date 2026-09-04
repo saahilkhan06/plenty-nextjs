@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { MapPin, Search } from "lucide-react";
 import SearchField from "../ui/SearchField";
 import DropdownActions from "../ui/DropdownActions";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const POPULAR_SEARCHES = ["All Balearic Islands", "All Portugal", "All Turkey"];
 const TOP_CITIES = ["Amsterdam", "Budapest", "Barcelona", "Rome"];
@@ -12,19 +13,22 @@ export default function DestinationSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(containerRef, () => setIsOpen(false));
 
   const toggleSelect = (item: string) => {
     setSelected((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item],
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
     );
   };
 
   const filteredCities = TOP_CITIES.filter((c) =>
-    c.toLowerCase().includes(query.toLowerCase()),
+    c.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <div className="w-full sm:w-auto sm:flex-1">
+    <div ref={containerRef} className="w-full sm:w-auto sm:flex-1">
       <SearchField
         id="destination"
         label="Destination"
@@ -34,7 +38,6 @@ export default function DestinationSearch() {
         onClick={() => setIsOpen((prev) => !prev)}
         isOpen={isOpen}
       >
-        {/* Inner search input */}
         <div className="flex items-center gap-2 rounded-md border-2 border-blue-900 px-3 py-2">
           <Search size={18} className="text-gray-500" />
           <input
@@ -47,9 +50,7 @@ export default function DestinationSearch() {
         </div>
 
         <div className="mt-4 max-h-80 overflow-y-auto pr-1">
-          <h3 className="mb-2 font-bold text-gray-900">
-            Most Popular Searches
-          </h3>
+          <h3 className="mb-2 font-bold text-gray-900">Most Popular Searches</h3>
           <ul className="mb-4 space-y-2">
             {POPULAR_SEARCHES.map((item) => (
               <li key={item}>
@@ -89,6 +90,14 @@ export default function DestinationSearch() {
             ))}
           </ul>
         </div>
+
+        <DropdownActions
+          onClear={() => {
+            setSelected([]);
+            setQuery("");
+          }}
+          onDone={() => setIsOpen(false)}
+        />
       </SearchField>
     </div>
   );

@@ -9,6 +9,7 @@ import DepartureSearch from "./Components/search/DepartureSearch";
 import TravelDateSearch from "./Components/search/TravelDateSearch";
 import StayingForSearch from "./Components/search/StayingForSearch";
 import GuestsSearch from "./Components/search/GuestsSearch";
+import Navbar from "./Components/ui/Navbar";
 
 import {
   Moon,
@@ -94,14 +95,14 @@ const CATEGORIES = [
 //   "Help",
 // ];
 
-const NAV_LINKS = [
-  { label: "Holidays", hasDropdown: true },
-  { label: "Destinations", hasDropdown: true },
-  { label: "Nile Cruise", hasDropdown: true },
-  { label: "Multi Centre Holidays", hasDropdown: true },
-  { label: "Blog", hasDropdown: false },
-  { label: "Help", hasDropdown: false },
-];
+// const NAV_LINKS = [
+//   { label: "Holidays", hasDropdown: true },
+//   { label: "Destinations", hasDropdown: true },
+//   { label: "Nile Cruise", hasDropdown: true },
+//   { label: "Multi Centre Holidays", hasDropdown: true },
+//   { label: "Blog", hasDropdown: false },
+//   { label: "Help", hasDropdown: false },
+// ];
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -204,20 +205,21 @@ export default function HomePage() {
                 </a>
               </li>
             ))}
-          </ul> */}
+          </ul>
           <ul className="flex flex-col items-center gap-4 py-4 font-bold lg:flex-row lg:flex-wrap lg:justify-center lg:gap-10">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
                 <a href="#" className="group flex items-center gap-1">
                   <span className="relative animated-underline">
                     {link.label}
-                    {/* <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-current transition-all duration-300 group-hover:w-full" /> */}
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-current transition-all duration-300 group-hover:w-full" />
                   </span>
                   {link.hasDropdown && <ChevronDown size={14} />}
                 </a>
               </li>
             ))}
-          </ul>
+          </ul> */}
+          <Navbar />
         </nav>
       </div>
       {/* Search box */}
@@ -225,17 +227,18 @@ export default function HomePage() {
         <div className="mb-10 flex flex-wrap gap-8">
           <button
             onClick={() => setTab("flight")}
-            className={`flex cursor-pointer  items-center gap-2.5 text-xl font-semibold ${
-              tab === "flight"
+            className={`flex cursor-pointer items-center gap-2.5 text-xl font-semibold ${
+              tab === "flight" ? "text-white" : "text-gray-400"
             }`}
           >
             <Umbrella size={24} />
             <span className="animated-underline">Flight + Hotel</span>
           </button>
+
           <button
             onClick={() => setTab("hotel")}
             className={`flex cursor-pointer items-center gap-2.5 text-xl font-semibold ${
-              tab === "hotel" ? "underline" : ""
+              tab === "hotel" ? "text-white" : "text-gray-400"
             }`}
           >
             <Hotel size={24} />
@@ -247,14 +250,14 @@ export default function HomePage() {
           <DestinationSearch />
 
           <div className="flex gap-4 lg:contents">
-            <DepartureSearch />
+            {tab === "flight" && <DepartureSearch />}
             <StayingForSearch />
           </div>
 
           <TravelDateSearch />
           <GuestsSearch />
 
-          <button className="h-14 w-full rounded-[20px] bg-[#2171C9] font-bold text-white transition-colors hover:bg-[#3A8DE4] lg:w-auto lg:shrink-0 lg:px-8">
+          <button className="h-14 w-full rounded-[10px] bg-[#2171C9] font-bold text-white transition-colors hover:bg-[#3A8DE4] lg:w-auto lg:shrink-0 lg:px-8">
             Search
           </button>
         </div>
@@ -309,14 +312,14 @@ export default function HomePage() {
       </section>
 
       {/* Feature banner */}
-      <section className="mx-auto flex max-w-325 flex-wrap items-center justify-center gap-10 px-6 py-9 text-center lg:justify-between lg:text-left">
-        <h1 className="whitespace-nowrap text-[26px] font-extrabold leading-tight tracking-tight text-[#1a1a1a] sm:text-[40px]">
+      <section className="mx-auto flex max-w-325 flex-wrap items-center justify-center gap-10 px-6 py-9 text-center sm:px-10 lg:flex-nowrap lg:justify-between lg:px-16 lg:text-left">
+        <h1 className="shrink-0 whitespace-nowrap text-[26px] font-extrabold leading-tight tracking-tight text-[#1a1a1a] sm:text-[40px]">
           Travel,
           <br />
           The Plenty Way
         </h1>
 
-        <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:flex lg:flex-wrap lg:gap-12">
+        <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:flex lg:flex-nowrap lg:gap-8">
           {FEATURES.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}

@@ -49,16 +49,17 @@ const INFORMATION = [
   "Privacy Policy",
   "FAQs",
 ];
+const currentYear = new Date().getFullYear();
 
 export default function Footer() {
   return (
     <footer className="bg-white text-black">
-      <section className="mb-8 flex flex-wrap items-center justify-between gap-10 bg-[#FFC72C] px-6 py-10 sm:px-14">
+      <section className="mb-8 flex flex-wrap items-center justify-between gap-10 bg-[#FFC72C] px-6 py-6 sm:px-14 sm:py-8 lg:py-16">
         <div className="max-w-120">
-          <p className="mb-1.5 text-sm font-semibold text-[#10254e]">
+          <p className=" text-sm font-semibold text-[#10254e]">
             OUR NEWSLETTER
           </p>
-          <h2 className="mb-2.5 text-[26px] font-extrabold text-black sm:text-[34px]">
+          <h2 className="text-[26px] font-bold text-black sm:text-[34px]">
             Never Miss a Deal
           </h2>
           <p className="text-sm leading-relaxed text-black">
@@ -67,29 +68,28 @@ export default function Footer() {
           </p>
         </div>
 
-        <div>
-          <label htmlFor="email" className="mb-1.5 block text-md text-black">
-            Email
-          </label>
-          <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex w-full max-w-md items-center justify-center overflow-hidden rounded-full bg-white shadow-lg sm:w-auto lg:max-w-lg">
+          <form className="flex w-full">
             <input
               type="email"
               id="email"
               autoComplete="email"
               placeholder="Enter your email"
-              className="w-full bg-white rounded p-3.5 text-[15px] outline-none sm:w-\[220px] md:w-\[340px]"
+              required
+              className="min-w-0 flex-1 bg-transparent px-5 py-3 text-sm text-gray-700 outline-none placeholder:text-gray-400 lg:px-6 lg:py-4 lg:text-base"
             />
             <button
               type="submit"
-              className="rounded bg-[#2171C9] px-7 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-blue-900"
+              className="shrink-0 whitespace-nowrap rounded-full bg-[#2B1B4C] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#3a2566] lg:px-8 lg:py-4 lg:text-base"
             >
               Subscribe
             </button>
-          </div>
+          </form>
         </div>
       </section>
       {/* Trust badges */}
-      <div className="flex flex-wrap justify-center gap-10 border-b border-gray-200 px-5 py-5">
+      <div className="flex flex-nowrap justify-center gap-4 sm:gap-10 overflow-x-auto border-b border-gray-200 px-5 py-5">
+        {" "}
         <div className="flex items-center gap-2">
           <img
             src="/assets/img/ATOL.png"
@@ -120,7 +120,7 @@ export default function Footer() {
           <img
             src="/assets/img/plenty-logo.png"
             alt="Plenty Holidays"
-            className="h-25 w-60"
+            className="h-auto w-60"
           />
           <h3 className="font-semibold">Get In Touch</h3>
           <p className="font-semibold">📞 0203 994 7646</p>
@@ -157,7 +157,7 @@ export default function Footer() {
       <hr className="border-gray-200" />
 
       <p className="px-5 py-5 text-center text-sm">
-        Copyright © 2026 Plenty Holidays | All Rights Reserved
+        Copyright © {currentYear} Plenty Holidays | All Rights Reserved
       </p>
     </footer>
   );

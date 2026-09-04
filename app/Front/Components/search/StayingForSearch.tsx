@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Moon } from "lucide-react";
 import SearchField from "../ui/SearchField";
 import DropdownActions from "../ui/DropdownActions";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const NIGHTS = Array.from({ length: 14 }, (_, i) => i + 1);
 
 export default function StayingForSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [nights, setNights] = useState(7);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(containerRef, () => setIsOpen(false));
 
   return (
-    <div className="relative flex-1">
+    <div ref={containerRef} className="relative flex-1">
       <SearchField
         id="staying-for"
         label="Staying For"
@@ -33,9 +37,7 @@ export default function StayingForSearch() {
               setIsOpen(false);
             }}
             className={`w-full rounded-md px-4 py-2.5 text-center font-medium ${
-              n === nights
-                ? "bg-blue-100 text-blue-900"
-                : "text-gray-700 hover:bg-gray-100"
+              n === nights ? "bg-blue-100 text-blue-900" : "text-gray-700 hover:bg-gray-100"
             }`}
           >
             {n} Night{n > 1 ? "s" : ""}

@@ -1,78 +1,44 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Plane, Search } from "lucide-react";
 import SearchField from "../ui/SearchField";
 import DropdownActions from "../ui/DropdownActions";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
-const REGIONS = [
-  "Any London",
-  "Any Midland",
-  "Any North West",
-  "Any Scotland",
-  "Any South",
-];
+const REGIONS = ["Any London", "Any Midland", "Any North West", "Any Scotland", "Any South"];
 
 const AIRPORTS = [
-  "Aberdeen",
-  "Belfast",
-  "Belfast City",
-  "Birmingham",
-  "Bournemouth",
-  "Bristol",
-  "Cardiff",
-  "Cork",
-  "Doncaster Sheffield",
-  "Dublin",
-  "East Midlands",
-  "Edinburgh",
-  "Exeter",
-  "Glasgow",
-  "Glasgow-Prestwick",
-  "Humberside",
-  "Inverness",
-  "Leeds Bradford",
-  "Liverpool",
-  "London - Gatwick",
-  "London - Heathrow",
-  "London - Luton",
-  "London - Southend",
-  "London - Stansted",
-  "London City",
-  "Londonderry-Eglinton",
-  "Manchester",
-  "Newcastle",
-  "Newquay-St Mawgan",
-  "Norwich",
-  "Southampton",
+  "Aberdeen", "Belfast", "Belfast City", "Birmingham",
+  "Bournemouth", "Bristol", "Cardiff", "Cork",
+  "Doncaster Sheffield", "Dublin", "East Midlands", "Edinburgh",
+  "Exeter", "Glasgow", "Glasgow-Prestwick", "Humberside",
+  "Inverness", "Leeds Bradford", "Liverpool", "London - Gatwick",
+  "London - Heathrow", "London - Luton", "London - Southend", "London - Stansted",
+  "London City", "Londonderry-Eglinton", "Manchester", "Newcastle",
+  "Newquay-St Mawgan", "Norwich", "Southampton",
 ];
 
 export default function DepartureSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-    const wrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  useClickOutside(containerRef, () => setIsOpen(false));
 
   const toggleSelect = (item: string) => {
     setSelected((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item],
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
     );
   };
-  useEffect(() => {
-  function onClick(e: MouseEvent) {
-    if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setIsOpen(false);
-  }
-  document.addEventListener("mousedown", onClick);
-  return () => document.removeEventListener("mousedown", onClick);
-}, []);
 
   const filteredAirports = AIRPORTS.filter((a) =>
-    a.toLowerCase().includes(query.toLowerCase()),
+    a.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <div className="relative flex-1">
+    <div ref={containerRef} className="relative flex-1">
       <SearchField
         id="departure"
         label="Departure"
@@ -83,7 +49,6 @@ export default function DepartureSearch() {
         isOpen={isOpen}
         panelClassName="absolute left-0 top-full z-50 mt-2 flex max-h-[420px] w-[700px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl bg-white shadow-2xl"
       >
-        {/* Search input pinned at the top */}
         <div className="flex items-center gap-2 border-b p-4">
           <Search size={18} className="text-gray-500" />
           <input
@@ -95,15 +60,11 @@ export default function DepartureSearch() {
           />
         </div>
 
-        {/* Scrollable content */}
         <div className="overflow-y-auto p-6">
           <h3 className="mb-3 font-bold text-gray-900">Regions</h3>
           <div className="mb-6 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
             {REGIONS.map((item) => (
-              <label
-                key={item}
-                className="flex cursor-pointer items-center gap-2"
-              >
+              <label key={item} className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
                   checked={selected.includes(item)}
@@ -118,10 +79,7 @@ export default function DepartureSearch() {
           <h3 className="mb-3 font-bold text-gray-900">Airports A-Z</h3>
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
             {filteredAirports.map((airport) => (
-              <label
-                key={airport}
-                className="flex cursor-pointer items-center gap-2"
-              >
+              <label key={airport} className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
                   checked={selected.includes(airport)}
@@ -133,6 +91,7 @@ export default function DepartureSearch() {
             ))}
           </div>
         </div>
+
         <DropdownActions
           onClear={() => {
             setSelected([]);
