@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { NAV_LINKS } from "../../data/navLinks";
-import DropdownActions from "../ui/DropdownActions";
+import DropdownActions from "./DropdownActions";
 
 export default function Nav() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -108,8 +108,6 @@ export default function Nav() {
             className="absolute inset-x-4 top-full z-50 max-h-[70vh] overflow-y-auto rounded-b-2xl bg-white py-6 shadow-xl sm:inset-x-8 sm:py-8 lg:inset-x-16 lg:rounded-b-4xl"
           >
             <div className="mx-auto max-w-350 px-4 sm:px-5">
-              
-
               <div
                 className={
                   allFlat
