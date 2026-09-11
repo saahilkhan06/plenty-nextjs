@@ -1,3 +1,4 @@
+import Link from "next/link";
 const SOCIAL_LINKS = [
   {
     label: "Facebook",
@@ -66,6 +67,13 @@ export default function Footer() {
             Subscribe to our newsletter and be the first to know about exclusive
             offers and flash sales
           </p>
+          <div>
+            <Link href="/Front/enquery">
+              <button className="mt-5 bg-black text-white p-3 cursor-pointer rounded-2xl hover:bg-white  hover:text-black">
+              → Enquire Now
+            </button>
+            </Link>
+          </div>
         </div>
 
         <div className="flex w-full max-w-md items-center justify-center overflow-hidden rounded-full bg-white shadow-lg sm:w-auto lg:max-w-lg">
