@@ -9,6 +9,8 @@ export default function FrontLayout({
 }) {
   return (
     <>
+      <link rel="shortcut icon" href="/iconplenty.png" type="image/x-icon" />
+
       <Header />
       <main>{children}</main>
       <Footer />

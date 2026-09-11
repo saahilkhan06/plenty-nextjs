@@ -23,8 +23,7 @@ import {
   Umbrella,
   Wallet,
 } from "lucide-react";
-// import Header from "/Components/Header";
-// import Footer from "/Components/Footer";
+import Link from "next/link";
 
 const SLIDES = [
   "/assets/img/20260331180729_ph-1.jpg",
@@ -86,23 +85,6 @@ const CATEGORIES = [
   { img: "photo-1519046904884-53103b34b206", label: "Couple Holidays" },
   { img: "photo-1512389142860-9c449e58a543", label: "Christmas Market" },
 ];
-// const NAV_LINKS = [
-//   "Holidays",
-//   "Destinations",
-//   "Nile Cruise",
-//   "Multi Centre Holidays",
-//   "Blog",
-//   "Help",
-// ];
-
-// const NAV_LINKS = [
-//   { label: "Holidays", hasDropdown: true },
-//   { label: "Destinations", hasDropdown: true },
-//   { label: "Nile Cruise", hasDropdown: true },
-//   { label: "Multi Centre Holidays", hasDropdown: true },
-//   { label: "Blog", hasDropdown: false },
-//   { label: "Help", hasDropdown: false },
-// ];
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -124,13 +106,15 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-\[1400px\] flex-wrap items-center justify-between gap-4 px-5 py-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <Image
-              src="/assets/img/plenty-logo-2.png"
-              alt="Plenty Holidays Logo"
-              width={300}
-              height={50}
-              // className="h-auto" // ✅ width scales automatically
-            />
+            <Link href="/Front">
+              <Image
+                src="/assets/img/plenty-logo-2.png"
+                alt="Plenty Holidays Logo"
+                width={300}
+                height={50}
+                className="ml-10"
+              />
+            </Link>
           </div>
 
           {/* Right cluster */}
@@ -299,7 +283,7 @@ export default function HomePage() {
             Trending Destinations
           </h1>
         </div>
-        <div className="mx-5 grid grid-cols-1 gap-5 md:mx-10 md:grid-cols-2">
+        <div className="mx-5 grid grid-cols-1 gap-5 md:mx-10 md:grid-cols-2 ">
           {TOP_DEALS.map((d) => (
             <img
               key={d.alt}

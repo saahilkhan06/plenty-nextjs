@@ -142,8 +142,8 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  { label: "Nile Cruise", hasDropdown: false, href: "/Front/nile-cruise" },
-  { label: "Multi Centre Holidays", hasDropdown: false, href: "/Front/multi-centre-holidays" },
+  { label: "Nile Cruise", hasDropdown: false, href: "/Front/nilecruise" },
+  { label: "Multi Centre Holidays", hasDropdown: false, href: "/Front/multicentre" },
   { label: "Blog", hasDropdown: false, href: "/Front/blog" },
   { label: "Help", hasDropdown: false, href: "/Front/help" },
 ];

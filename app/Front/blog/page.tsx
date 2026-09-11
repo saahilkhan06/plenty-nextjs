@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Mainnav from "../Components/mainnav/page";
 
-export default function Nile() {
+export default function Blog() {
   return (
     <>
       <Mainnav />

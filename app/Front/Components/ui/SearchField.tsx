@@ -27,7 +27,7 @@ export default function SearchField({
 }) {
   return (
     <div className={`flex flex-col gap-2.5 ${widthClass}`}>
-      <label htmlFor={id} className="text-lg font-semibold">
+      <label htmlFor={id} className="text-lg font-semibold hidden sm:block">
         {label}
       </label>
 
