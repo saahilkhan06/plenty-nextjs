@@ -1,5 +1,6 @@
 import React from "react";
 import { FiCalendar } from "react-icons/fi";
+import AccountMenu from "./Account";
 
 export const TopBar = () => {
   const date = new Date();
@@ -44,6 +45,7 @@ export const TopBar = () => {
           <FiCalendar />
           <span>Prev 6 Months</span>
         </button>
+        <AccountMenu/>
       </div>
     </div>
   );

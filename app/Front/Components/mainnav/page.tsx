@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {
   Moon,
   BedDouble,
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react";
 
 import Image from "next/image";
 import Navbar from "../ui/Navbar";
+import next from "next";
 
 export default function Mainnav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,13 +31,14 @@ export default function Mainnav() {
         <div className="mx-auto flex max-w-\[1400px\] flex-wrap items-center justify-between gap-4 px-5 py-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <Image
-              src="/assets/img/plenty-logo-2.png"
-              alt="Plenty Holidays Logo"
-              width={300}
-              height={50}
-              // className="h-auto" // ✅ width scales automatically
-            />
+            <Link href={"/Front"}>
+              <Image
+                src="/assets/img/plenty-logo-2.png"
+                alt="Plenty Holidays Logo"
+                width={300}
+                height={50}
+              />
+            </Link>
           </div>
 
           {/* Right cluster */}
