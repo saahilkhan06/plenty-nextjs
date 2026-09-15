@@ -1,19 +1,14 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 
-export default function ResetPassword() {
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Get these from the email link
   const token = searchParams.get("token");
   const email = searchParams.get("email");
-  if (!token || !email) {
-    router.replace("/Login");
-    return null;
-  }
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,7 +17,16 @@ export default function ResetPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Redirect if token or email is missing
+  useEffect(() => {
+    if (!token || !email) {
+      router.replace("/Login");
+    }
+  }, [token, email, router]);
+
+  const handleResetPassword = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
 
     setError("");
@@ -72,7 +76,6 @@ export default function ResetPassword() {
 
       setSuccess(data.message || "Password reset successfully!");
 
-      // Go to login after successful reset
       setTimeout(() => {
         router.push("/Login");
       }, 2000);
@@ -83,6 +86,11 @@ export default function ResetPassword() {
     }
   };
 
+  // Don't show the form if URL parameters are missing
+  if (!token || !email) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
@@ -90,11 +98,12 @@ export default function ResetPassword() {
           Plenty Holidays
         </h1>
 
-        <p className="mb-6 text-gray-500">Reset your password</p>
+        <p className="mb-6 text-gray-500">
+          Reset your password
+        </p>
 
         <form onSubmit={handleResetPassword} className="space-y-5">
           {/* Email */}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Email
@@ -102,14 +111,13 @@ export default function ResetPassword() {
 
             <input
               type="email"
-              value={email || ""}
+              value={email}
               disabled
               className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-gray-500 outline-none"
             />
           </div>
 
           {/* New Password */}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               New Password
@@ -126,7 +134,6 @@ export default function ResetPassword() {
           </div>
 
           {/* Confirm Password */}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Confirm Password
@@ -143,15 +150,20 @@ export default function ResetPassword() {
           </div>
 
           {/* Error */}
-
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-600">
+              {error}
+            </p>
+          )}
 
           {/* Success */}
-
-          {success && <p className="text-sm text-green-600">{success}</p>}
+          {success && (
+            <p className="text-sm text-green-600">
+              {success}
+            </p>
+          )}
 
           {/* Submit */}
-
           <button
             type="submit"
             disabled={loading}
@@ -162,5 +174,13 @@ export default function ResetPassword() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPassword() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
