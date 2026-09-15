@@ -1,6 +1,6 @@
 "use client";
 
-import Navbar from "../Components/mainnav/page";
+import Headnav from "../Components/Headnav/Headnav";
 import { useState } from "react";
 
 export default function enquery() {
@@ -50,7 +50,7 @@ export default function enquery() {
 
   return (
     <div>
-      <Navbar />
+      <Headnav />
 
       <div
         className="min-h-screen flex items-center justify-center py-10"

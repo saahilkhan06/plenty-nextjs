@@ -1,10 +1,12 @@
 import Image from "next/image";
-import Mainnav from "../Components/mainnav/page";
+import Headnav from "../Components/Headnav/Headnav";
+import HolidayCard from "../Components/multicard/HolidayCard";
 
 export default function Blog() {
   return (
     <>
-      <Mainnav />
+      <Headnav />
+
       <div className="relative w-full h-120">
         <Image
           src="/assets/img/blog-1.jpg"
@@ -27,7 +29,198 @@ export default function Blog() {
       </div>
       <div className="m-20">
         <div>
-          <h1 className="text-3xl font-extrabold">Featured Blogs</h1>
+          <h1 className="text-3xl font-extrabold mb-5">Featured Blogs</h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
+          <HolidayCard
+            image="/assets/img/multi1.jpg"
+            title="Grand Italy Tour: Venice, Florence & Rome"
+            location="Italy"
+            duration="9 Nights / 10 Days"
+            price={449}
+            hotels={[
+              {
+                name: "Hotel Adria",
+                rating: 4,
+              },
+              {
+                name: "Hotel Grifone Firenze",
+                rating: 4,
+              },
+              {
+                name: "TH Roma Carpegna Palace",
+                rating: 4,
+              },
+            ]}
+          />
         </div>
       </div>
     </>

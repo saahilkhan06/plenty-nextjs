@@ -9,7 +9,7 @@ export default function Forgotpassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const resetlink = async (e: React.FormEvent<HTMLFormElement>) => {
+  const resetlink = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setLoading(true);
@@ -38,7 +38,9 @@ export default function Forgotpassword() {
       }
 
       setSuccess(data.message || "Reset link has been sent to your email.");
-    } catch (error) {
+    } catch {
+      // Intentionally ignored here: a failed request is already reported to the
+      // user with a generic error message, and we don't want to rethrow it.
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

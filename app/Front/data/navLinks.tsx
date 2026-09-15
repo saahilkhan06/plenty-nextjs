@@ -29,19 +29,20 @@ export const NAV_LINKS: NavLink[] = [
         type: "flat",
         title: "Deals Offers",
         items: [
-          { label: "Affordable Luxury", href: "/holidays/affordable-luxury" },
-          { label: "All Inclusive Holidays", href: "/holidays/all-inclusive" },
-          { label: "Last Minute Deals", href: "/holidays/last-minute" },
-          { label: "Romantic Escapes", href: "/holidays/romantic-escapes" },
+          { label: "Affordable Luxury", href: "/Front/Holidays/affordable-luxury" },
+          { label: "All Inclusive Holidays", href: "/Front/Holidays/all-inclusive" },
+          { label: "Last Minute Deals", href: "/Front/Holidays/last-minute" },
+          { label: "Romantic Escapes", href: "/Front/Holidays/romantic-escapes" },
+          
         ],
       },
       {
         type: "flat",
         title: "Holiday Type",
         items: [
-          { label: "Beach Holidays", href: "/holidays/beach" },
-          { label: "Cheap Holidays", href: "/holidays/cheap" },
-          { label: "City Breaks", href: "/holidays/city-breaks" },
+          { label: "Beach Holidays", href: "/Front/Holidays/beach" },
+          { label: "Cheap Holidays", href: "/Front/Holidays/cheap" },
+          { label: "City Breaks", href: "/Front/Holidays/city-breaks" },
         ],
       },
       {
@@ -60,7 +61,10 @@ export const NAV_LINKS: NavLink[] = [
         items: [
           { label: "Adults Only", href: "/holidays/adults-only" },
           { label: "Couple Holidays", href: "/holidays/couple" },
-          { label: "Family Friendly Holidays", href: "/holidays/family-friendly" },
+          {
+            label: "Family Friendly Holidays",
+            href: "/holidays/family-friendly",
+          },
           { label: "Honeymoon Holidays", href: "/holidays/honeymoon" },
         ],
       },
@@ -77,9 +81,9 @@ export const NAV_LINKS: NavLink[] = [
           {
             label: "Balearic Islands",
             children: [
-              { label: "Ibiza", href: "/destinations/ibiza" },
-              { label: "Majorca", href: "/destinations/majorca" },
-              { label: "Menorca", href: "/destinations/menorca" },
+              { label: "Ibiza", href: "/Front/Destinations/ibiza" },
+              { label: "Majorca", href: "/Front/Destinations/majorca" },
+              { label: "Menorca", href: "/Front/Destinations/menorca" },
             ],
           },
           {
@@ -143,7 +147,11 @@ export const NAV_LINKS: NavLink[] = [
     ],
   },
   { label: "Nile Cruise", hasDropdown: false, href: "/Front/nilecruise" },
-  { label: "Multi Centre Holidays", hasDropdown: false, href: "/Front/multicentre" },
+  {
+    label: "Multi Centre Holidays",
+    hasDropdown: false,
+    href: "/Front/Multicentre",
+  },
   { label: "Blog", hasDropdown: false, href: "/Front/blog" },
   { label: "Help", hasDropdown: false, href: "/Front/help" },
 ];

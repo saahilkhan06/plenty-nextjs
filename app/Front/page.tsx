@@ -12,13 +12,9 @@ import GuestsSearch from "./Components/search/GuestsSearch";
 import Navbar from "./Components/ui/Navbar";
 
 import {
-  Moon,
-  BedDouble,
-  CalendarDays,
+  
   Clock,
   Hotel,
-  MapPin,
-  PlaneTakeoff,
   ShieldCheck,
   Umbrella,
   Wallet,

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 const SOCIAL_LINKS = [
   {
@@ -103,17 +104,21 @@ export default function Footer() {
             src="/assets/img/ATOL.png"
             alt="ATOL Protected"
             className="h-12"
+            width={56}
+            height={56}
           />
           <span className="text-sm leading-tight">
-            <strong className="block text-lg">ATOL</strong>
+            <strong className="block text-lg">ATOL</strong>{" "}
             protected
           </span>
         </div>
         <div className="flex items-center gap-2 ">
-          <img
+          <Image
             src="/assets/img/tta.png"
             alt="Travel Trust Association"
             className="h-12"
+            width={96}
+                height={61}
           />
           <span className="text-sm leading-tight">
             <strong className="block text-lg">TTA Member</strong>
@@ -171,7 +176,7 @@ export default function Footer() {
   );
 }
 
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
+function FooterColumn({ title, items }: { readonly title: string; readonly items: readonly string[] }) {
   return (
     <div className="flex flex-col gap-3">
       <h3 className="font-semibold ">{title}</h3>

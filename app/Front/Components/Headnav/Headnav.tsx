@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Phone, Menu, X, ChevronDown, Umbrella, Hotel } from "lucide-react";
+import { Phone, Menu, X, Umbrella, Hotel } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -58,18 +58,22 @@ export default function Headnav() {
                 src="/assets/img/ATOL.png"
                 alt="ATOL Protected"
                 className="h-12"
+                width={56}
+                height={56}
               />
               <span className="hidden lg:flex flex-col text-[13px] leading-tight">
-                <strong className="text-xl">ATOL</strong>
+                <strong className="text-xl">ATOL</strong>{""}
                 protected
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <img
+              <Image
                 src="/assets/img/tta.png"
                 alt="Travel Trust Association"
                 className="h-12"
+                width={96}
+                height={61}
               />
               <span className="hidden lg:flex flex-col text-[13px] leading-tight">
                 <strong className="text-xl">
