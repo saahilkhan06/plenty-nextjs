@@ -50,7 +50,7 @@ export default function Headnav() {
                 priority
                 className="
             h-auto
-            w-[145px]
+            w-[160px]
             sm:w-[190px]
             lg:w-[300px]
             lg:ml-10
@@ -60,7 +60,7 @@ export default function Headnav() {
           </div>
 
           {/* Right cluster */}
-          <div className="flex min-w-0 items-center gap-2 sm:gap-4 lg:gap-8">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4 lg:gap-8">
             {/* ATOL */}
             <div className="flex shrink-0 items-center gap-2">
               <Image
@@ -68,7 +68,7 @@ export default function Headnav() {
                 alt="ATOL Protected"
                 width={56}
                 height={56}
-                className="h-8 w-auto sm:h-10 lg:h-12"
+                className="h-12  w-auto sm:h-10 lg:h-12"
               />
 
               <span className="hidden lg:flex flex-col text-[13px] leading-tight">
@@ -84,7 +84,7 @@ export default function Headnav() {
                 alt="Travel Trust Association"
                 width={96}
                 height={61}
-                className="h-8 w-auto sm:h-10 lg:h-12"
+                className="h-12 w-auto sm:h-10 lg:h-12"
               />
 
               <span className="hidden lg:flex flex-col text-[13px] leading-tight">
@@ -101,16 +101,17 @@ export default function Headnav() {
               href="tel:02039947646"
               aria-label="Call Plenty Holidays"
               className="
-          flex
-          shrink-0
-          items-center
-          justify-center
-          rounded-xl
-          bg-blue-900
-          p-2.5
-          text-white
-          sm:px-4
-          sm:py-2.5
+          hidden
+    md:flex
+    shrink-0
+    items-center
+    justify-center
+    rounded-xl
+    bg-blue-900
+    p-2.5
+    text-white
+    sm:px-4
+    sm:py-2.5
         "
             >
               <Phone size={18} />
@@ -163,7 +164,7 @@ export default function Headnav() {
         </nav>
       </div>
       {/* Search box */}
-      <section className="w-full bg-blue-950 bg-cover bg-center px-5 py-8 text-white sm:px-8">
+      <section className="w-full bg-blue-950 bg-cover bg-center px-5 py-4 lg:py-8 text-white sm:px-8">
         <div className="mb-10 flex flex-wrap gap-8">
           <button
             onClick={() => setTab("flight")}
@@ -186,7 +187,7 @@ export default function Headnav() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-3">
           <DestinationSearch />
 
           <div className="flex gap-4 lg:contents">

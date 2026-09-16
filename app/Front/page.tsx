@@ -1,14 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Phone, Menu, X,  } from "lucide-react";
 import Image from "next/image";
 import "./global.css";
-import DestinationSearch from "./Components/search/DestinationSearch";
-import DepartureSearch from "./Components/search/DepartureSearch";
-import TravelDateSearch from "./Components/search/TravelDateSearch";
-import StayingForSearch from "./Components/search/StayingForSearch";
-import GuestsSearch from "./Components/search/GuestsSearch";
+
 // import Navbar from "./Components/ui/Navbar";
 import Headnav from "./Components/Headnav/Headnav"
 import {
@@ -16,10 +11,9 @@ import {
   Clock,
   Hotel,
   ShieldCheck,
-  Umbrella,
   Wallet,
 } from "lucide-react";
-import Link from "next/link";
+import MobileFooter from "./Components/mobilefooter";
 
 const SLIDES = [
   "/assets/img/20260331180729_ph-1.jpg",
@@ -204,40 +198,8 @@ export default function HomePage() {
           </a>
         ))}
       </section>
+      <MobileFooter/>
     </div>
   );
 }
 
-// function SearchField({
-//   id,
-//   label,
-//   icon: Icon,
-//   placeholder,
-//   widthClass = "w-full sm:w-auto sm:flex-1",
-// }: {
-//   id: string;
-//   label: string;
-//   icon: React.ElementType;
-//   placeholder: string;
-//   widthClass?: string;
-// }) {
-//   return (
-//     <div className={`flex flex-col gap-2.5 ${widthClass}`}>
-//       <label htmlFor={id} className="text-lg font-semibold">
-//         {label}
-//       </label>
-//       <div className="relative">
-//         <Icon
-//           size={18}
-//           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black"
-//         />
-//         <input
-//           id={id}
-//           type="text"
-//           placeholder={placeholder}
-//           className="w-full cursor-pointer rounded-[5px] border-none bg-white p-3.5 pl-11 text-black outline-none"
-//         />
-//       </div>
-//     </div>
-//   );
-// }
