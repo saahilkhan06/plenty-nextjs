@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import MobileFooter from "./mobilefooter";
 const SOCIAL_LINKS = [
   {
     label: "Facebook",
@@ -55,7 +56,7 @@ const currentYear = new Date().getFullYear();
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-black">
+    <footer className="bg-white pb-14 text-black md:pb-0">
       <section className="mb-8 flex flex-wrap items-center justify-between gap-10 bg-[#FFC72C] px-6 py-6 sm:px-14 sm:py-8 lg:py-16">
         <div className="max-w-120">
           <p className=" text-sm font-semibold text-[#10254e]">
@@ -71,8 +72,8 @@ export default function Footer() {
           <div>
             <Link href="/Front/enquery">
               <button className="mt-5 bg-black text-white p-3 cursor-pointer rounded-2xl hover:bg-white  hover:text-black">
-              → Enquire Now
-            </button>
+                → Enquire Now
+              </button>
             </Link>
           </div>
         </div>
@@ -108,8 +109,7 @@ export default function Footer() {
             height={56}
           />
           <span className="text-sm leading-tight">
-            <strong className="block text-lg">ATOL</strong>{" "}
-            protected
+            <strong className="block text-lg">ATOL</strong> protected
           </span>
         </div>
         <div className="flex items-center gap-2 ">
@@ -118,7 +118,7 @@ export default function Footer() {
             alt="Travel Trust Association"
             className="h-12"
             width={96}
-                height={61}
+            height={61}
           />
           <span className="text-sm leading-tight">
             <strong className="block text-lg">TTA Member</strong>
@@ -172,11 +172,18 @@ export default function Footer() {
       <p className="px-5 py-5 text-center text-sm">
         Copyright © {currentYear} Plenty Holidays | All Rights Reserved
       </p>
+      <MobileFooter />
     </footer>
   );
 }
 
-function FooterColumn({ title, items }: { readonly title: string; readonly items: readonly string[] }) {
+function FooterColumn({
+  title,
+  items,
+}: {
+  readonly title: string;
+  readonly items: readonly string[];
+}) {
   return (
     <div className="flex flex-col gap-3">
       <h3 className="font-semibold ">{title}</h3>
