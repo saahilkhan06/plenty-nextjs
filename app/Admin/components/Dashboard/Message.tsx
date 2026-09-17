@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { RiAccountCircleFill } from "react-icons/ri";
-import Logout from "./Logout";
-import Link from "next/link";
+import { RiMessage2Fill } from "react-icons/ri";
 
-export default function AccountMenu() {
+export default function MessageMenu() {
   const [open, setOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -26,32 +24,20 @@ export default function AccountMenu() {
 
   return (
     <div ref={menuRef} className="relative">
-      {/* Account button */}
+      {/* Message button */}
       <button
         onClick={() => setOpen(!open)}
         className="rounded-lg flex gap-2 items-center border border-stone-300 px-4 py-2 text-sm cursor-pointer"
       >
-        <RiAccountCircleFill className="text-xl" />
-        Account
+        <RiMessage2Fill className="text-xl" />
       </button>
 
-      {/* Account menu */}
+      {/* Message menu */}
       {open && (
         <div className="absolute right-0 top-12 z-50 w-56 rounded-lg border bg-white p-3 shadow-lg">
-          <h3 className="mb-3 px-2 font-medium">Account Settings</h3>
+          <h3 className="mb-3 px-2 font-medium">Messages</h3>
 
-          <Link href={"/Admin/Updatepassword"}>
-            <div className="px-2 py-1">
-              <button
-                className="w-full cursor-pointer bg-blue-800 text-white py-2"
-               
-              >
-                Update password
-              </button>
-            </div>
-          </Link>
-
-          <Logout />
+          
         </div>
       )}
     </div>

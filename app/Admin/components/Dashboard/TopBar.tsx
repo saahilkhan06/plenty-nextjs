@@ -1,6 +1,7 @@
 import React from "react";
 import { FiCalendar } from "react-icons/fi";
 import AccountMenu from "./Account";
+import MessageMenu from "./Message"
 
 export const TopBar = () => {
   const date = new Date();
@@ -34,7 +35,7 @@ export const TopBar = () => {
 
   return (
     <div className="border-b px-4 mb-4 mt-2 pb-4 border-stone-200">
-      <div className="flex items-center justify-between p-0.5">
+      <div className="flex pt-3 items-center justify-between p-0.5">
         <div>
           <span className="text-sm font-bold block">🚀 {greeting}, John!</span>
 
@@ -45,6 +46,7 @@ export const TopBar = () => {
           <FiCalendar />
           <span>Prev 6 Months</span>
         </button>
+        <MessageMenu/>
         <AccountMenu/>
       </div>
     </div>
