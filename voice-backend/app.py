@@ -40,7 +40,7 @@ app.add_middleware(
 print("Loading Whisper model...")
 
 model = WhisperModel(
-    "base",
+    "tiny.en",
     device="cpu",
     compute_type="int8"
 )
