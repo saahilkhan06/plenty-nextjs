@@ -312,7 +312,7 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
           console.log("⏱️ No speech detected for 3 seconds");
 
           finishVoiceSearch();
-        }, 2000);
+        }, 4000);
       };
 
       /*
