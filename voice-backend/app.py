@@ -112,7 +112,7 @@ async def voice(
         segments, info = model.transcribe(
     temp_path,
     language="en",
-    beam_size=5,
+    beam_size=2,
     vad_filter=True
 )
 
