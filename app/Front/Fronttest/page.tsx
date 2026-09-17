@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import "./global.css";
 
 // import Navbar from "./Components/ui/Navbar";
-import Headnav from "./Components/Headnav/Headnav"
+import Headnavtest from "../Components/Headnavtest/page";
 import {
   
   Clock,
   Hotel,
   ShieldCheck,
   Wallet,
+  Mic
 } from "lucide-react";
-import MobileFooter from "./Components/mobilefooter";
+import MobileFooter from "../Components/mobilefooter";
 
 const SLIDES = [
   "/assets/img/20260331180729_ph-1.jpg",
@@ -77,8 +77,6 @@ const CATEGORIES = [
 ];
 
 export default function HomePage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [tab, setTab] = useState<"flight" | "hotel">("flight");
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
@@ -92,9 +90,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen text-black bg-white">
       {/* <Header /> */}
-      <Headnav/>
-
-      {/* Banner slider */}
+      <Headnavtest/>      {/* Banner slider */}
       <section className="relative mb-8 w-full overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
@@ -123,7 +119,7 @@ export default function HomePage() {
       </section>
 
       {/* Top deals */}
-      <section>
+      <section className="md:m-8">
         <div className="mb-6 flex flex-col items-center gap-2.5 px-5 text-center">
           <h2 className="text-blue-600 text-2xl font-bold">TOP DEALS</h2>
           <h1 className="text-[30px] font-bold text-black md:text-[40px]">
@@ -136,7 +132,7 @@ export default function HomePage() {
               key={d.alt}
               src={d.src}
               alt={d.alt}
-              className="h-60 w-full rounded-[10px] object-cover"
+              className="h-auto w-auto rounded-[10px] object-cover"
             />
           ))}
         </div>
@@ -179,7 +175,7 @@ export default function HomePage() {
         {CATEGORIES.map((c, i) => (
           <a
             key={`${c.label}-${i}`}
-            href="#"
+            href="https://plenty-nextjs.onrender.com"
             className="overflow-hidden animated-underline rounded-md bg-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_22px_rgba(0,0,0,0.18)]"
           >
             <Image
@@ -202,3 +198,4 @@ export default function HomePage() {
     </div>
   );
 }
+
