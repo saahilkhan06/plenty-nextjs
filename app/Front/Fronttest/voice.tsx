@@ -84,6 +84,8 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
 
   const [showPopup, setShowPopup] = useState(false);
 
+  const transcriptResultsRef = useRef<string[]>([]);
+
   /*
    * ==========================================
    * CLEAR ALL TIMERS
@@ -255,6 +257,7 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
       /*
        * Reset everything for the new search.
        */
+      transcriptResultsRef.current = [];
       finalTextRef.current = "";
 
       manuallyStoppedRef.current = false;
@@ -321,78 +324,39 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
        * ======================================
        */
       recognition.onresult = (event) => {
-        /*
-         * Speech has been detected.
-         *
-         * Cancel the no-speech timer.
-         */
         if (noSpeechTimerRef.current) {
           clearTimeout(noSpeechTimerRef.current);
-
           noSpeechTimerRef.current = null;
         }
 
-        /*
-         * User is actively speaking.
-         *
-         * Cancel previous silence timer.
-         */
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
-
           silenceTimerRef.current = null;
         }
 
+        let finalText = "";
         let interimText = "";
 
-        let finalText = finalTextRef.current;
-
-        /*
-         * Read all recognition results.
-         */
-        for (let i = event.resultIndex; i < event.results.length; i++) {
+        for (let i = 0; i < event.results.length; i++) {
           const result = event.results[i];
+          const transcript = result[0].transcript.trim();
 
-          const transcript = result[0].transcript;
-
-          /*
-           * Final result = browser is confident
-           * about these words.
-           */
           if (result.isFinal) {
-            finalText += transcript + " ";
+            transcriptResultsRef.current[i] = transcript;
           } else {
-            /*
-             * Interim result = live text.
-             */
-            interimText += transcript;
+            interimText += transcript + " ";
           }
         }
 
-        finalText = finalText.trim();
+        finalText = transcriptResultsRef.current.filter(Boolean).join(" ");
 
-        finalTextRef.current = finalText;
+        finalTextRef.current = finalText.trim();
 
-        /*
-         * Combine confirmed text +
-         * currently spoken text.
-         */
         const displayText = `${finalText} ${interimText}`.trim();
 
-        if (displayText) {
-          setVoiceText(displayText);
-        }
+        setVoiceText(displayText);
 
-        /*
-         * Start a silence timer.
-         *
-         * If the browser gives us a result and
-         * then no new speech arrives for 3 sec,
-         * finish the search.
-         */
         silenceTimerRef.current = setTimeout(() => {
-          console.log("🔇 3 seconds of silence");
-
           finishVoiceSearch();
         }, 3000);
       };
