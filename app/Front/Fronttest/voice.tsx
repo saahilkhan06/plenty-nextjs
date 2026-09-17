@@ -7,630 +7,745 @@ interface VoiceSearchProps {
   onTextReceived: (text: string) => void;
 }
 
-export default function VoiceSearch({
-  onTextReceived,
-}: VoiceSearchProps) {
-
-  // ============================================
-  // Refs
-  // ============================================
-
-  const mediaRecorderRef =
-    useRef<MediaRecorder | null>(null);
-
-  const streamRef =
-    useRef<MediaStream | null>(null);
-
-  const audioChunksRef =
-    useRef<Blob[]>([]);
-
-  const audioContextRef =
-    useRef<AudioContext | null>(null);
-
-  const analyserRef =
-    useRef<AnalyserNode | null>(null);
-
-  const silenceTimerRef =
-    useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const animationFrameRef =
-    useRef<number | null>(null);
-
-  // Important:
-  // We don't want the initial silence to stop recording.
-  // User must speak first.
-  const hasDetectedSpeechRef =
-    useRef(false);
-
-  // ============================================
-  // State
-  // ============================================
-
-  const [recording, setRecording] =
-    useState(false);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  // ============================================
-  // Detect silence
-  // ============================================
-
-  const detectSilence = (
-    stream: MediaStream
-  ) => {
-
-    const audioContext =
-      new AudioContext();
-
-    const analyser =
-      audioContext.createAnalyser();
-
-    const source =
-      audioContext.createMediaStreamSource(
-        stream
-      );
-
-    analyser.fftSize = 2048;
-
-    source.connect(analyser);
-
-    audioContextRef.current =
-      audioContext;
-
-    analyserRef.current =
-      analyser;
-
-    const dataArray =
-      new Uint8Array(
-        analyser.fftSize
-      );
-
-    const checkAudio = () => {
-
-      if (!mediaRecorderRef.current) {
-        return;
-      }
-
-      analyser.getByteTimeDomainData(
-        dataArray
-      );
-
-      let sum = 0;
-
-      for (
-        let i = 0;
-        i < dataArray.length;
-        i++
-      ) {
-        const value =
-          (dataArray[i] - 128) / 128;
-
-        sum += value * value;
-      }
-
-      const volume =
-        Math.sqrt(
-          sum / dataArray.length
-        );
-
-      // Voice threshold
-      const isSilent =
-        volume < 0.02;
-
-      // ========================================
-      // Voice detected
-      // ========================================
-
-      if (!isSilent) {
-
-        // User has started speaking
-        hasDetectedSpeechRef.current =
-          true;
-
-        // Cancel silence timer
-        if (silenceTimerRef.current) {
-
-          clearTimeout(
-            silenceTimerRef.current
-          );
-
-          silenceTimerRef.current =
-            null;
-        }
-      }
-
-      // ========================================
-      // Silence detected AFTER speech
-      // ========================================
-
-      if (
-        isSilent &&
-        hasDetectedSpeechRef.current
-      ) {
-
-        if (!silenceTimerRef.current) {
-
-          silenceTimerRef.current =
-            setTimeout(() => {
-
-              console.log(
-                "🔇 3 seconds of silence detected"
-              );
-
-              stopRecording();
-
-            }, 3000);
-        }
-      }
-
-      animationFrameRef.current =
-        requestAnimationFrame(
-          checkAudio
-        );
+interface SpeechRecognitionEventLike {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: {
+      isFinal: boolean;
+      [index: number]: {
+        transcript: string;
+      };
     };
+  };
+}
 
-    checkAudio();
+interface SpeechRecognitionErrorEventLike {
+  error: string;
+}
+
+interface SpeechRecognitionLike {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+
+  /*
+   * Stores the final words that the browser
+   * has already confirmed.
+   */
+  const finalTextRef = useRef("");
+
+  /*
+   * Timer used when no speech is detected.
+   */
+  const noSpeechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /*
+   * Timer used after the user stops speaking.
+   */
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /*
+   * Used to know whether the user manually
+   * stopped the microphone.
+   */
+  const manuallyStoppedRef = useRef(false);
+
+  /*
+   * Prevents the recognition from automatically
+   * restarting after we intentionally stop it.
+   */
+  const shouldKeepListeningRef = useRef(false);
+
+  const [recording, setRecording] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const [voiceText, setVoiceText] = useState("");
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  /*
+   * ==========================================
+   * CLEAR ALL TIMERS
+   * ==========================================
+   */
+  const clearTimers = () => {
+    if (noSpeechTimerRef.current) {
+      clearTimeout(noSpeechTimerRef.current);
+
+      noSpeechTimerRef.current = null;
+    }
+
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+
+      silenceTimerRef.current = null;
+    }
   };
 
-  // ============================================
-  // Start recording
-  // ============================================
+  /*
+   * ==========================================
+   * COMPLETELY STOP MICROPHONE
+   * ==========================================
+   */
+  const completelyStopRecognition = () => {
+    console.log("🛑 Completely stopping voice recognition");
 
-  const startRecording =
-    async () => {
+    clearTimers();
 
+    shouldKeepListeningRef.current = false;
+
+    manuallyStoppedRef.current = true;
+
+    const recognition = recognitionRef.current;
+
+    if (recognition) {
       try {
+        /*
+         * abort() immediately stops recognition.
+         *
+         * This is preferable when we want
+         * the microphone to turn off completely.
+         */
+        recognition.abort();
+      } catch (error) {
+        console.log("Recognition already stopped");
+      }
+    }
 
-        setError("");
+    recognitionRef.current = null;
 
-        console.log(
-          "🎤 Requesting microphone..."
-        );
+    setRecording(false);
+  };
 
-        const stream =
-          await navigator.mediaDevices.getUserMedia(
-            {
-              audio: true,
-            }
-          );
+  /*
+   * ==========================================
+   * FINISH VOICE SEARCH
+   * ==========================================
+   */
+  const finishVoiceSearch = () => {
+    clearTimers();
 
-        console.log(
-          "🎤 Microphone access granted"
-        );
+    shouldKeepListeningRef.current = false;
 
-        streamRef.current =
-          stream;
+    manuallyStoppedRef.current = true;
 
-        // Reset speech detection
-        hasDetectedSpeechRef.current =
-          false;
+    const finalText = finalTextRef.current.trim();
 
-        const mediaRecorder =
-          new MediaRecorder(stream);
+    console.log("🎤 Final voice text:", finalText);
 
-        mediaRecorderRef.current =
-          mediaRecorder;
+    /*
+     * Stop recognition completely.
+     */
+    const recognition = recognitionRef.current;
 
-        audioChunksRef.current =
-          [];
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (error) {
+        console.log("Recognition already stopped");
+      }
+    }
 
-        // ======================================
-        // Audio chunks
-        // ======================================
+    recognitionRef.current = null;
 
-        mediaRecorder.ondataavailable =
-          (event) => {
+    setRecording(false);
 
-            if (
-              event.data.size > 0
-            ) {
+    /*
+     * If we have text, send it to the
+     * parent component.
+     */
+    if (finalText) {
+      setVoiceText(finalText);
 
-              audioChunksRef.current.push(
-                event.data
-              );
-            }
-          };
+      onTextReceived(finalText);
 
-        // ======================================
-        // Recording stopped
-        // ======================================
+      /*
+       * Give the user a moment to see
+       * the final text before closing.
+       */
+      setTimeout(() => {
+        setShowPopup(false);
+        setVoiceText("");
+        setLoading(false);
+      }, 1200);
+    } else {
+      /*
+       * No speech was detected.
+       */
+      setVoiceText("No speech detected.");
 
-        mediaRecorder.onstop =
-          async () => {
+      setLoading(false);
 
-            console.log(
-              "🛑 Recording stopped"
-            );
+      setTimeout(() => {
+        setShowPopup(false);
+        setVoiceText("");
+      }, 1000);
+    }
+  };
 
-            const audioBlob =
-              new Blob(
-                audioChunksRef.current,
-                {
-                  type:
-                    mediaRecorder.mimeType,
-                }
-              );
+  /*
+   * ==========================================
+   * START RECORDING
+   * ==========================================
+   */
+  const startRecording = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
 
-            console.log(
-              "Audio size:",
-              audioBlob.size
-            );
+    setError("");
 
-            console.log(
-              "Audio type:",
-              audioBlob.type
-            );
+    /*
+     * Get browser SpeechRecognition.
+     *
+     * Chrome uses webkitSpeechRecognition.
+     * Some browsers expose SpeechRecognition.
+     */
+    const SpeechRecognition =
+      (
+        window as unknown as {
+          SpeechRecognition?: SpeechRecognitionConstructor;
+          webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        }
+      ).SpeechRecognition ||
+      (
+        window as unknown as {
+          webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        }
+      ).webkitSpeechRecognition;
 
-            // Stop microphone
-            stream
-              .getTracks()
-              .forEach((track) =>
-                track.stop()
-              );
+    /*
+     * Browser does not support SpeechRecognition.
+     */
+    if (!SpeechRecognition) {
+      setError(
+        "Voice recognition is not supported. Please use Chrome or Edge.",
+      );
 
-            streamRef.current =
-              null;
+      return;
+    }
 
-            mediaRecorderRef.current =
-              null;
+    try {
+      /*
+       * Clean up any previous recognition.
+       */
+      completelyStopRecognition();
 
-            // Clear silence timer
-            if (
-              silenceTimerRef.current
-            ) {
+      /*
+       * Reset everything for the new search.
+       */
+      finalTextRef.current = "";
 
-              clearTimeout(
-                silenceTimerRef.current
-              );
+      manuallyStoppedRef.current = false;
 
-              silenceTimerRef.current =
-                null;
-            }
+      shouldKeepListeningRef.current = true;
 
-            // Stop animation
-            if (
-              animationFrameRef.current
-            ) {
+      clearTimers();
 
-              cancelAnimationFrame(
-                animationFrameRef.current
-              );
+      /*
+       * Create new recognition instance.
+       */
+      const recognition = new SpeechRecognition();
 
-              animationFrameRef.current =
-                null;
-            }
+      recognitionRef.current = recognition;
 
-            // Close AudioContext
-            if (
-              audioContextRef.current
-            ) {
+      /*
+       * Continue listening.
+       */
+      recognition.continuous = true;
 
-              await audioContextRef.current.close();
+      /*
+       * Give us temporary/interim results
+       * while the user is still speaking.
+       */
+      recognition.interimResults = true;
 
-              audioContextRef.current =
-                null;
-            }
+      /*
+       * English voice search.
+       */
+      recognition.lang = "en-US";
 
-            // Send audio to FastAPI
-            await sendAudio(
-              audioBlob
-            );
-          };
-
-        // ======================================
-        // Start MediaRecorder
-        // ======================================
-
-        mediaRecorder.start();
+      /*
+       * ======================================
+       * RECOGNITION STARTED
+       * ======================================
+       */
+      recognition.onstart = () => {
+        console.log("🎤 Voice recognition started");
 
         setRecording(true);
 
         setLoading(false);
 
-        console.log(
-          "🎙️ Recording started"
-        );
+        setShowPopup(true);
 
-        // Start silence detection
-        detectSilence(stream);
+        setVoiceText("Listening...");
 
-      } catch (error) {
+        /*
+         * Start 3-second no-speech timer.
+         *
+         * If nothing is detected for 3 seconds,
+         * automatically close the popup.
+         */
+        noSpeechTimerRef.current = setTimeout(() => {
+          console.log("⏱️ No speech detected for 3 seconds");
 
-        console.error(
-          "❌ Microphone error:",
-          error
-        );
+          finishVoiceSearch();
+        }, 2000);
+      };
 
-        setError(
-          "Could not access microphone."
-        );
-      }
-    };
+      /*
+       * ======================================
+       * LIVE TRANSCRIPTION
+       * ======================================
+       */
+      recognition.onresult = (event) => {
+        /*
+         * Speech has been detected.
+         *
+         * Cancel the no-speech timer.
+         */
+        if (noSpeechTimerRef.current) {
+          clearTimeout(noSpeechTimerRef.current);
 
-  // ============================================
-  // Stop recording
-  // ============================================
+          noSpeechTimerRef.current = null;
+        }
 
-  const stopRecording =
-    () => {
+        /*
+         * User is actively speaking.
+         *
+         * Cancel previous silence timer.
+         */
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
 
-      if (
-        !mediaRecorderRef.current
-      ) {
-        return;
-      }
+          silenceTimerRef.current = null;
+        }
 
-      if (
-        mediaRecorderRef.current
-          .state === "recording"
-      ) {
+        let interimText = "";
 
-        console.log(
-          "🛑 Stopping recording..."
-        );
+        let finalText = finalTextRef.current;
 
-        mediaRecorderRef.current.stop();
+        /*
+         * Read all recognition results.
+         */
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+
+          const transcript = result[0].transcript;
+
+          /*
+           * Final result = browser is confident
+           * about these words.
+           */
+          if (result.isFinal) {
+            finalText += transcript + " ";
+          } else {
+            /*
+             * Interim result = live text.
+             */
+            interimText += transcript;
+          }
+        }
+
+        finalText = finalText.trim();
+
+        finalTextRef.current = finalText;
+
+        /*
+         * Combine confirmed text +
+         * currently spoken text.
+         */
+        const displayText = `${finalText} ${interimText}`.trim();
+
+        if (displayText) {
+          setVoiceText(displayText);
+        }
+
+        /*
+         * Start a silence timer.
+         *
+         * If the browser gives us a result and
+         * then no new speech arrives for 3 sec,
+         * finish the search.
+         */
+        silenceTimerRef.current = setTimeout(() => {
+          console.log("🔇 3 seconds of silence");
+
+          finishVoiceSearch();
+        }, 3000);
+      };
+
+      /*
+       * ======================================
+       * ERROR
+       * ======================================
+       */
+      recognition.onerror = (event) => {
+        console.error("❌ Speech recognition error:", event.error);
+
+        clearTimers();
 
         setRecording(false);
-      }
-    };
-
-  // ============================================
-  // Send audio to FastAPI
-  // ============================================
-
-  const sendAudio =
-    async (
-      audioBlob: Blob
-    ) => {
-
-      try {
-
-        setLoading(true);
-
-        setError("");
-
-        console.log(
-          "================================"
-        );
-
-        console.log(
-          "📤 SEND AUDIO FUNCTION CALLED"
-        );
-
-        console.log(
-          "Audio blob:",
-          audioBlob
-        );
-
-        console.log(
-          "Audio size:",
-          audioBlob.size
-        );
-
-        console.log(
-          "Audio type:",
-          audioBlob.type
-        );
-
-        // ======================================
-        // FormData
-        // ======================================
-
-        const formData =
-          new FormData();
-
-        formData.append(
-          "file",
-          audioBlob,
-          "voice.webm"
-        );
-
-        console.log(
-          "📤 Sending audio to FastAPI..."
-        );
-
-        // ======================================
-        // FastAPI request
-        // ======================================
-
-        const response =
-          await fetch(
-            "https://plenty-nextjs-1.onrender.com/voice",
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
-
-        console.log(
-          "📥 FastAPI status:",
-          response.status
-        );
-
-        if (!response.ok) {
-
-          throw new Error(
-            `Server returned ${response.status}`
-          );
-        }
-
-        // ======================================
-        // Response
-        // ======================================
-
-        const data =
-          await response.json();
-
-        console.log(
-          "📦 FastAPI response:",
-          data
-        );
-
-        console.log(
-          "🎤 YOU SPOKE:",
-          data.text
-        );
-
-        // ======================================
-        // Recognized text
-        // ======================================
-
-        if (
-          data.success &&
-          typeof data.text === "string" &&
-          data.text.trim()
-        ) {
-
-          const recognizedText =
-            data.text.trim();
-
-          console.log(
-            "✅ RECOGNIZED TEXT:",
-            recognizedText
-          );
-
-          // Send text to parent
-          onTextReceived(
-            recognizedText
-          );
-
-        } else {
-
-          console.log(
-            "❌ No text returned from Whisper"
-          );
-
-          setError(
-            "I couldn't understand your voice."
-          );
-        }
-
-      } catch (error) {
-
-        console.error(
-          "❌ Voice API error:",
-          error
-        );
-
-        setError(
-          "Unable to connect to the voice backend."
-        );
-
-      } finally {
 
         setLoading(false);
-      }
-    };
 
-  // ============================================
-  // UI
-  // ============================================
+        /*
+         * If we intentionally stopped it,
+         * don't show an error.
+         */
+        if (manuallyStoppedRef.current) {
+          return;
+        }
+
+        if (event.error === "not-allowed") {
+          setError("Microphone permission was denied.");
+
+          setVoiceText("Microphone permission denied.");
+        } else if (event.error === "no-speech") {
+          setError("No speech detected.");
+
+          setVoiceText("No speech detected.");
+        } else if (event.error === "audio-capture") {
+          setError("Could not access your microphone.");
+
+          setVoiceText("Could not access microphone.");
+        } else {
+          setError("Voice recognition failed.");
+
+          setVoiceText("Voice recognition failed.");
+        }
+
+        /*
+         * Make sure microphone is no longer active.
+         */
+        shouldKeepListeningRef.current = false;
+
+        recognitionRef.current = null;
+
+        setTimeout(() => {
+          setShowPopup(false);
+          setVoiceText("");
+        }, 1500);
+      };
+
+      /*
+       * ======================================
+       * RECOGNITION ENDED
+       * ======================================
+       */
+      recognition.onend = () => {
+        console.log("🛑 Voice recognition ended");
+
+        /*
+         * If we intentionally stopped it,
+         * don't restart.
+         */
+        if (!shouldKeepListeningRef.current) {
+          setRecording(false);
+
+          return;
+        }
+
+        /*
+         * Browser sometimes stops SpeechRecognition
+         * automatically.
+         *
+         * Restart it so the user can continue speaking.
+         */
+        try {
+          console.log("🔄 Restarting voice recognition...");
+
+          recognition.start();
+        } catch (error) {
+          console.log("Could not restart recognition");
+        }
+      };
+
+      /*
+       * ======================================
+       * START
+       * ======================================
+       */
+      recognition.start();
+
+      setShowPopup(true);
+
+      setVoiceText("Listening...");
+    } catch (error) {
+      console.error("❌ Could not start voice recognition:", error);
+
+      completelyStopRecognition();
+
+      setShowPopup(false);
+
+      setError("Could not start voice recognition.");
+    }
+  };
+
+  /*
+   * ==========================================
+   * BUTTON CLICK
+   * ==========================================
+   */
+  const handleMicClick = () => {
+    if (loading) {
+      return;
+    }
+
+    if (recording) {
+      /*
+       * User manually clicked mic to stop.
+       */
+      finishVoiceSearch();
+    } else {
+      /*
+       * Start new voice search.
+       */
+      startRecording();
+    }
+  };
 
   return (
-    <div className="flex w-full items-center justify-center lg:hidden">
+    <>
+      {/* ================================= */}
+      {/* MICROPHONE BUTTON */}
+      {/* ================================= */}
 
-      <button
-        type="button"
-        disabled={loading}
-        onClick={
-          recording
-            ? stopRecording
-            : startRecording
-        }
-        className={`
-          relative
+      <div
+        className="
           flex
-          h-14
           w-full
           items-center
           justify-center
-          overflow-visible
-          rounded-[10px]
-          transition-all
-          duration-300
-
-          ${
-            recording
-              ? "bg-red-500 text-white shadow-lg shadow-red-300"
-              : "bg-[#55A5F5] text-white hover:bg-[#3A8DE4]"
-          }
-
-          ${
-            loading
-              ? "cursor-not-allowed opacity-70"
-              : ""
-          }
-        `}
+          lg:hidden
+        "
       >
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleMicClick}
+          className={`
+            relative
+            flex
+            h-14
+            w-full
+            items-center
+            justify-center
+            overflow-visible
+            rounded-[10px]
+            transition-all
+            duration-300
 
-        {/* ==================================
-            Recording animation
-        ================================== */}
+            ${
+              recording
+                ? "bg-red-500 text-white shadow-lg shadow-red-300"
+                : "bg-[#55A5F5] text-white hover:bg-[#3A8DE4]"
+            }
 
-        {recording && (
-          <>
-            <span
-              className="
-                absolute
-                inset-0
-                animate-ping
-                rounded-[10px]
-                bg-red-400
-                opacity-40
-              "
-            />
+            ${loading ? "cursor-not-allowed opacity-70" : ""}
+          `}
+        >
+          {/* Recording animation */}
+          {recording && (
+            <>
+              <span
+                className="
+                  absolute
+                  inset-0
+                  animate-ping
+                  rounded-[10px]
+                  bg-red-400
+                  opacity-40
+                "
+              />
 
-            <span
-              className="
-                absolute
-                -inset-1
-                animate-pulse
-                rounded-[10px]
-                border-2
-                border-red-300
-              "
-            />
-          </>
-        )}
-
-        {/* ==================================
-            Icon
-        ================================== */}
-
-        <span className="relative z-10">
-
-          {loading ? (
-
-            <Loader2
-              size={26}
-              className="animate-spin"
-            />
-
-          ) : recording ? (
-
-            <MicOff size={26} />
-
-          ) : (
-
-            <Mic size={26} />
-
+              <span
+                className="
+                  absolute
+                  -inset-1
+                  animate-pulse
+                  rounded-[10px]
+                  border-2
+                  border-red-300
+                "
+              />
+            </>
           )}
 
-        </span>
-      </button>
+          <span className="relative z-10">
+            {loading ? (
+              <Loader2 size={26} className="animate-spin" />
+            ) : recording ? (
+              <MicOff size={26} />
+            ) : (
+              <Mic size={26} />
+            )}
+          </span>
+        </button>
 
-      {/* Error */}
-      {error && (
-        <p className="absolute mt-20 text-xs text-red-300">
-          {error}
-        </p>
+        {/* Error message */}
+        {error && (
+          <p
+            className="
+              absolute
+              mt-20
+              px-4
+              text-center
+              text-xs
+              text-red-300
+            "
+          >
+            {error}
+          </p>
+        )}
+      </div>
+
+      {/* ================================= */}
+      {/* RESPONSIVE CENTER POPUP */}
+      {/* ================================= */}
+
+      {showPopup && (
+        <div
+          className="
+      fixed
+      inset-0
+      z-[9999]
+      flex
+      items-center
+      justify-center
+      overflow-hidden
+      bg-black/30
+      px-3
+      py-4
+    "
+        >
+          <div
+            className="
+        box-border
+        flex
+        w-full
+        max-w-[420px]
+        min-w-0
+        flex-col
+        overflow-hidden
+        rounded-2xl
+        bg-white
+        p-4
+        text-center
+        shadow-2xl
+
+        sm:p-5
+      "
+          >
+            {/* Mic */}
+            <div
+              className={`
+          mx-auto
+          mb-3
+          flex
+          h-14
+          w-14
+          shrink-0
+          items-center
+          justify-center
+          rounded-full
+
+          ${recording ? "bg-red-100 text-red-500" : "bg-blue-100 text-blue-500"}
+        `}
+            >
+              {recording ? <Mic size={28} /> : <MicOff size={28} />}
+            </div>
+
+            {/* Transcript */}
+            <div
+              className="
+          box-border
+          w-full
+          min-w-0
+          max-w-full
+          overflow-y-auto
+          overflow-x-hidden
+          rounded-xl
+          bg-gray-50
+          px-3
+          py-3
+
+          max-h-[35vh]
+          min-h-[52px]
+
+          sm:max-h-[40vh]
+          sm:px-4
+          sm:py-4
+        "
+            >
+              <p
+                className="
+            m-0
+            w-full
+            min-w-0
+            max-w-full
+            whitespace-normal
+            break-words
+            text-sm
+            font-medium
+            leading-5
+            text-gray-800
+
+            sm:text-base
+            sm:leading-6
+
+            md:text-lg
+          "
+              >
+                {voiceText || "Start speaking..."}
+              </p>
+            </div>
+
+            {/* Helper text */}
+            {recording && (
+              <p
+                className="
+            mt-3
+            w-full
+            max-w-full
+            px-1
+            text-[11px]
+            leading-4
+            text-gray-400
+
+            sm:mt-4
+            sm:text-xs
+            sm:leading-5
+          "
+              >
+                Speak now. Your words will appear here.
+              </p>
+            )}
+          </div>
+        </div>
       )}
-
-    </div>
+    </>
   );
 }
