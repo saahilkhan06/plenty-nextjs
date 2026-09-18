@@ -8,9 +8,9 @@ export const AccountToggle = () => {
       <Link href="https://plenty-nextjs.onrender.com">
       <button  className="flex p-0.5 relative gap-3 w-full items-center">
         <img
-          src="../logo.png"
+          src="../iconplenty.png"
           alt="avatar"
-          className="size-8 rounded shrink-0 shadow"
+          className="size-8 rounded shrink-0 bg-white shadow"
         />
         <div className="text-start">
           <span className="text-sm font-bold block">Plenty Holidays </span>

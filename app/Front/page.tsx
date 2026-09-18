@@ -1,18 +1,14 @@
 "use client";
+// Rename-Item -Path "Front" -NewName "Front_temp"
+// Rename-Item -Path "Front_temp" -NewName "front"
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import "./global.css";
 
 // import Navbar from "./Components/ui/Navbar";
-import Headnav from "./Components/Headnav/Headnav"
-import {
-  
-  Clock,
-  Hotel,
-  ShieldCheck,
-  Wallet,
-} from "lucide-react";
+import Headnav from "./Components/Headnav/Headnav";
+import { Clock, Hotel, ShieldCheck, Wallet } from "lucide-react";
 import MobileFooter from "./Components/mobilefooter";
 
 const SLIDES = [
@@ -92,7 +88,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen text-black bg-white">
       {/* <Header /> */}
-      <Headnav/>
+      <Headnav />
 
       {/* Banner slider */}
       <section className="relative mb-8 w-full overflow-hidden">
@@ -136,7 +132,7 @@ export default function HomePage() {
               key={d.alt}
               src={d.src}
               alt={d.alt}
-              className="h-60 w-full rounded-[10px] object-cover"
+              className="h-auto w-auto rounded-[10px] object-cover"
             />
           ))}
         </div>
@@ -198,7 +194,7 @@ export default function HomePage() {
           </a>
         ))}
       </section>
-      <MobileFooter/>
+      <MobileFooter />
     </div>
   );
 }

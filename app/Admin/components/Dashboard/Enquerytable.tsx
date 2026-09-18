@@ -30,13 +30,9 @@ export default function EnquiryTable() {
   }, [page]);
 
   return (
-    <div className="col-span-12 p-4 rounded border border-stone-300">
+    <div className="col-span-12 p-4 mb-4 rounded border border-stone-300">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="flex items-center gap-1.5 font-medium">Enquiries</h3>
-
-        <button className="text-sm text-violet-500 hover:underline">
-          See all
-        </button>
       </div>
 
       <div className="overflow-x-auto">

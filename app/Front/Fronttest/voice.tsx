@@ -1,22 +1,24 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 
 interface VoiceSearchProps {
   onTextReceived: (text: string) => void;
 }
 
+interface SpeechRecognitionResultLike {
+  isFinal: boolean;
+  [index: number]: {
+    transcript: string;
+  };
+}
+
 interface SpeechRecognitionEventLike {
   resultIndex: number;
   results: {
     length: number;
-    [index: number]: {
-      isFinal: boolean;
-      [index: number]: {
-        transcript: string;
-      };
-    };
+    [index: number]: SpeechRecognitionResultLike;
   };
 }
 
@@ -36,70 +38,124 @@ interface SpeechRecognitionLike {
   onstart: (() => void) | null;
   onend: (() => void) | null;
 
-  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onerror:
+    | ((event: SpeechRecognitionErrorEventLike) => void)
+    | null;
 
-  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onresult:
+    | ((event: SpeechRecognitionEventLike) => void)
+    | null;
 }
 
-type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+type SpeechRecognitionConstructor =
+  new () => SpeechRecognitionLike;
 
-export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+export default function VoiceSearch({
+  onTextReceived,
+}: VoiceSearchProps) {
+  /*
+   * ==========================================
+   * RECOGNITION
+   * ==========================================
+   */
+
+  const recognitionRef =
+    useRef<SpeechRecognitionLike | null>(null);
 
   /*
-   * Stores the final words that the browser
-   * has already confirmed.
+   * Each recording gets a unique session number.
+   *
+   * This prevents old recognition events from
+   * affecting a new recording.
    */
+  const sessionRef = useRef(0);
+
+  /*
+   * ==========================================
+   * TRANSCRIPT
+   * ==========================================
+   */
+
   const finalTextRef = useRef("");
 
   /*
-   * Timer used when no speech is detected.
+   * Stores individual browser recognition
+   * results so they are not appended repeatedly.
    */
-  const noSpeechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /*
-   * Timer used after the user stops speaking.
-   */
-  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /*
-   * Used to know whether the user manually
-   * stopped the microphone.
-   */
-  const manuallyStoppedRef = useRef(false);
-
-  /*
-   * Prevents the recognition from automatically
-   * restarting after we intentionally stop it.
-   */
-  const shouldKeepListeningRef = useRef(false);
-
-  const [recording, setRecording] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-
-  const [error, setError] = useState("");
-
-  const [voiceText, setVoiceText] = useState("");
-
-  const [showPopup, setShowPopup] = useState(false);
-
-  const transcriptResultsRef = useRef<string[]>([]);
+  const transcriptResultsRef =
+    useRef<string[]>([]);
 
   /*
    * ==========================================
-   * CLEAR ALL TIMERS
+   * TIMERS
    * ==========================================
    */
+
+  const noSpeechTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(
+      null
+    );
+
+  const silenceTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(
+      null
+    );
+
+  /*
+   * ==========================================
+   * FLAGS
+   * ==========================================
+   */
+
+  const manuallyStoppedRef =
+    useRef(false);
+
+  const finishingRef =
+    useRef(false);
+
+  const hasSpeechRef =
+    useRef(false);
+
+  /*
+   * ==========================================
+   * STATE
+   * ==========================================
+   */
+
+  const [recording, setRecording] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const [voiceText, setVoiceText] =
+    useState("");
+
+  const [showPopup, setShowPopup] =
+    useState(false);
+
+  /*
+   * ==========================================
+   * CLEAR TIMERS
+   * ==========================================
+   */
+
   const clearTimers = () => {
     if (noSpeechTimerRef.current) {
-      clearTimeout(noSpeechTimerRef.current);
+      clearTimeout(
+        noSpeechTimerRef.current
+      );
 
       noSpeechTimerRef.current = null;
     }
 
     if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
+      clearTimeout(
+        silenceTimerRef.current
+      );
 
       silenceTimerRef.current = null;
     }
@@ -107,31 +163,42 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
 
   /*
    * ==========================================
-   * COMPLETELY STOP MICROPHONE
+   * COMPLETELY STOP
    * ==========================================
    */
+
   const completelyStopRecognition = () => {
-    console.log("🛑 Completely stopping voice recognition");
+    console.log(
+      "🛑 Completely stopping recognition"
+    );
 
     clearTimers();
 
-    shouldKeepListeningRef.current = false;
-
     manuallyStoppedRef.current = true;
+    finishingRef.current = true;
 
-    const recognition = recognitionRef.current;
+    /*
+     * Invalidate the current session.
+     *
+     * Any old browser events will now be ignored.
+     */
+    sessionRef.current += 1;
+
+    const recognition =
+      recognitionRef.current;
 
     if (recognition) {
       try {
-        /*
-         * abort() immediately stops recognition.
-         *
-         * This is preferable when we want
-         * the microphone to turn off completely.
-         */
+        recognition.onstart = null;
+        recognition.onresult = null;
+        recognition.onerror = null;
+        recognition.onend = null;
+
         recognition.abort();
       } catch (error) {
-        console.log("Recognition already stopped");
+        console.log(
+          "Recognition already stopped"
+        );
       }
     }
 
@@ -142,30 +209,74 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
 
   /*
    * ==========================================
-   * FINISH VOICE SEARCH
+   * CLOSE POPUP
    * ==========================================
    */
-  const finishVoiceSearch = () => {
-    clearTimers();
 
-    shouldKeepListeningRef.current = false;
+  const closePopup = () => {
+    completelyStopRecognition();
+
+    setShowPopup(false);
+    setVoiceText("");
+    setLoading(false);
+    setError("");
+
+    finalTextRef.current = "";
+
+    transcriptResultsRef.current = [];
+
+    hasSpeechRef.current = false;
+  };
+
+  /*
+   * ==========================================
+   * FINISH SEARCH
+   * ==========================================
+   */
+
+  const finishVoiceSearch = () => {
+    /*
+     * Prevent this function from being executed
+     * multiple times by different browser events.
+     */
+    if (finishingRef.current) {
+      return;
+    }
+
+    finishingRef.current = true;
+
+    clearTimers();
 
     manuallyStoppedRef.current = true;
 
-    const finalText = finalTextRef.current.trim();
+    const finalText =
+      finalTextRef.current.trim();
 
-    console.log("🎤 Final voice text:", finalText);
+    console.log(
+      "🎤 FINAL VOICE TEXT:",
+      finalText
+    );
+
+    const recognition =
+      recognitionRef.current;
 
     /*
-     * Stop recognition completely.
+     * Stop recognition.
+     *
+     * Do NOT restart it.
      */
-    const recognition = recognitionRef.current;
-
     if (recognition) {
       try {
+        recognition.onstart = null;
+        recognition.onresult = null;
+        recognition.onerror = null;
+        recognition.onend = null;
+
         recognition.stop();
       } catch (error) {
-        console.log("Recognition already stopped");
+        console.log(
+          "Recognition already stopped"
+        );
       }
     }
 
@@ -174,36 +285,61 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
     setRecording(false);
 
     /*
-     * If we have text, send it to the
-     * parent component.
+     * ========================================
+     * TEXT FOUND
+     * ========================================
      */
+
     if (finalText) {
       setVoiceText(finalText);
 
+      setLoading(true);
+
+      /*
+       * Send text to parent immediately.
+       */
       onTextReceived(finalText);
 
       /*
-       * Give the user a moment to see
-       * the final text before closing.
+       * Keep final text visible briefly.
        */
       setTimeout(() => {
         setShowPopup(false);
         setVoiceText("");
         setLoading(false);
-      }, 1200);
-    } else {
-      /*
-       * No speech was detected.
-       */
-      setVoiceText("No speech detected.");
 
-      setLoading(false);
+        finalTextRef.current = "";
 
-      setTimeout(() => {
-        setShowPopup(false);
-        setVoiceText("");
+        transcriptResultsRef.current = [];
+
+        hasSpeechRef.current = false;
       }, 1000);
+
+      return;
     }
+
+    /*
+     * ========================================
+     * NO TEXT
+     * ========================================
+     */
+
+    setVoiceText(
+      "No speech detected."
+    );
+
+    setLoading(false);
+
+    setTimeout(() => {
+      setShowPopup(false);
+      setVoiceText("");
+
+      finalTextRef.current = "";
+
+      transcriptResultsRef.current = [];
+
+      hasSpeechRef.current = false;
+    }, 1000);
   };
 
   /*
@@ -211,18 +347,16 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
    * START RECORDING
    * ==========================================
    */
+
   const startRecording = () => {
-    if (typeof window === "undefined") {
+    if (
+      typeof window === "undefined"
+    ) {
       return;
     }
 
-    setError("");
-
     /*
      * Get browser SpeechRecognition.
-     *
-     * Chrome uses webkitSpeechRecognition.
-     * Some browsers expose SpeechRecognition.
      */
     const SpeechRecognition =
       (
@@ -238,64 +372,109 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
       ).webkitSpeechRecognition;
 
     /*
-     * Browser does not support SpeechRecognition.
+     * Browser doesn't support it.
      */
     if (!SpeechRecognition) {
       setError(
-        "Voice recognition is not supported. Please use Chrome or Edge.",
+        "Voice search is not supported in this browser. Please use Chrome."
       );
 
       return;
     }
 
+    /*
+     * Completely clean previous session.
+     */
+    completelyStopRecognition();
+
+    /*
+     * Create a NEW session ID.
+     */
+    const currentSession =
+      sessionRef.current;
+
+    /*
+     * Reset everything.
+     */
+    manuallyStoppedRef.current =
+      false;
+
+    finishingRef.current =
+      false;
+
+    hasSpeechRef.current =
+      false;
+
+    finalTextRef.current =
+      "";
+
+    transcriptResultsRef.current =
+      [];
+
+    clearTimers();
+
+    setError("");
+
+    setVoiceText("");
+
+    setLoading(false);
+
+    setShowPopup(true);
+
     try {
-      /*
-       * Clean up any previous recognition.
-       */
-      completelyStopRecognition();
-
-      /*
-       * Reset everything for the new search.
-       */
-      transcriptResultsRef.current = [];
-      finalTextRef.current = "";
-
-      manuallyStoppedRef.current = false;
-
-      shouldKeepListeningRef.current = true;
-
-      clearTimers();
-
       /*
        * Create new recognition instance.
        */
-      const recognition = new SpeechRecognition();
+      const recognition =
+        new SpeechRecognition();
 
-      recognitionRef.current = recognition;
+      recognitionRef.current =
+        recognition;
 
       /*
-       * Continue listening.
+       * ======================================
+       * IMPORTANT SETTINGS
+       * ======================================
+       */
+
+      /*
+       * Keep recognition alive while possible.
+       *
+       * IMPORTANT:
+       * We DO NOT restart it manually in onend.
        */
       recognition.continuous = true;
 
       /*
-       * Give us temporary/interim results
-       * while the user is still speaking.
+       * Needed for live text.
        */
       recognition.interimResults = true;
 
       /*
-       * English voice search.
+       * English.
        */
       recognition.lang = "en-US";
 
       /*
        * ======================================
-       * RECOGNITION STARTED
+       * ON START
        * ======================================
        */
+
       recognition.onstart = () => {
-        console.log("🎤 Voice recognition started");
+        /*
+         * Ignore old session.
+         */
+        if (
+          currentSession !==
+          sessionRef.current
+        ) {
+          return;
+        }
+
+        console.log(
+          "🎤 Recognition started"
+        );
 
         setRecording(true);
 
@@ -303,148 +482,404 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
 
         setShowPopup(true);
 
-        setVoiceText("Listening...");
+        setVoiceText("");
 
         /*
-         * Start 3-second no-speech timer.
-         *
-         * If nothing is detected for 3 seconds,
-         * automatically close the popup.
+         * Give the user 4 seconds to begin speaking.
          */
-        noSpeechTimerRef.current = setTimeout(() => {
-          console.log("⏱️ No speech detected for 3 seconds");
+        noSpeechTimerRef.current =
+          setTimeout(() => {
+            if (
+              currentSession !==
+              sessionRef.current
+            ) {
+              return;
+            }
 
-          finishVoiceSearch();
-        }, 4000);
+            /*
+             * Only close if absolutely
+             * no speech was detected.
+             */
+            if (
+              !hasSpeechRef.current
+            ) {
+              console.log(
+                "⏱️ No speech for 4 seconds"
+              );
+
+              finishVoiceSearch();
+            }
+          }, 4000);
       };
 
       /*
        * ======================================
-       * LIVE TRANSCRIPTION
+       * ON RESULT
        * ======================================
        */
-      recognition.onresult = (event) => {
-        if (noSpeechTimerRef.current) {
-          clearTimeout(noSpeechTimerRef.current);
-          noSpeechTimerRef.current = null;
+
+      recognition.onresult = (
+        event
+      ) => {
+        /*
+         * Ignore old session.
+         */
+        if (
+          currentSession !==
+          sessionRef.current
+        ) {
+          return;
         }
 
-        if (silenceTimerRef.current) {
-          clearTimeout(silenceTimerRef.current);
-          silenceTimerRef.current = null;
+        /*
+         * We have speech.
+         */
+        hasSpeechRef.current =
+          true;
+
+        /*
+         * Cancel initial no-speech timer.
+         */
+        if (
+          noSpeechTimerRef.current
+        ) {
+          clearTimeout(
+            noSpeechTimerRef.current
+          );
+
+          noSpeechTimerRef.current =
+            null;
         }
 
-        let finalText = "";
+        /*
+         * Reset silence timer.
+         */
+        if (
+          silenceTimerRef.current
+        ) {
+          clearTimeout(
+            silenceTimerRef.current
+          );
+
+          silenceTimerRef.current =
+            null;
+        }
+
+        /*
+         * ==================================
+         * BUILD TRANSCRIPT
+         * ==================================
+         */
+
         let interimText = "";
 
-        for (let i = 0; i < event.results.length; i++) {
-          const result = event.results[i];
-          const transcript = result[0].transcript.trim();
+        /*
+         * IMPORTANT:
+         *
+         * We store results by INDEX.
+         *
+         * We do NOT blindly append them.
+         *
+         * This prevents:
+         *
+         * holidays holidays holidays
+         *
+         * on mobile.
+         */
+        for (
+          let i = event.resultIndex;
+          i < event.results.length;
+          i++
+        ) {
+          const result =
+            event.results[i];
+
+          const transcript =
+            result[0].transcript
+              .trim();
+
+          if (!transcript) {
+            continue;
+          }
 
           if (result.isFinal) {
-            transcriptResultsRef.current[i] = transcript;
+            transcriptResultsRef.current[
+              i
+            ] = transcript;
           } else {
-            interimText += transcript + " ";
+            interimText +=
+              transcript + " ";
           }
         }
 
-        finalText = transcriptResultsRef.current.filter(Boolean).join(" ");
+        /*
+         * Combine confirmed results.
+         */
+        const finalText =
+          transcriptResultsRef.current
+            .filter(Boolean)
+            .join(" ")
+            .trim();
 
-        finalTextRef.current = finalText.trim();
+        finalTextRef.current =
+          finalText;
 
-        const displayText = `${finalText} ${interimText}`.trim();
+        /*
+         * Display live text.
+         */
+        const displayText =
+          `${finalText} ${interimText}`
+            .trim();
 
-        setVoiceText(displayText);
+        setVoiceText(
+          displayText
+        );
 
-        silenceTimerRef.current = setTimeout(() => {
-          finishVoiceSearch();
-        }, 3000);
+        /*
+         * ==================================
+         * 3 SECOND SILENCE
+         * ==================================
+         */
+
+        silenceTimerRef.current =
+          setTimeout(() => {
+            if (
+              currentSession !==
+              sessionRef.current
+            ) {
+              return;
+            }
+
+            console.log(
+              "🔇 3 seconds of silence"
+            );
+
+            finishVoiceSearch();
+          }, 3000);
       };
 
       /*
        * ======================================
-       * ERROR
+       * ON ERROR
        * ======================================
        */
-      recognition.onerror = (event) => {
-        console.error("❌ Speech recognition error:", event.error);
+
+      recognition.onerror = (
+        event
+      ) => {
+        /*
+         * Ignore old session.
+         */
+        if (
+          currentSession !==
+          sessionRef.current
+        ) {
+          return;
+        }
+
+        /*
+         * Ignore errors caused by our own
+         * intentional stop.
+         */
+        if (
+          manuallyStoppedRef.current ||
+          finishingRef.current
+        ) {
+          return;
+        }
+
+        console.error(
+          "❌ Speech recognition error:",
+          event.error
+        );
 
         clearTimers();
 
         setRecording(false);
 
-        setLoading(false);
-
         /*
-         * If we intentionally stopped it,
-         * don't show an error.
+         * Permission denied.
          */
-        if (manuallyStoppedRef.current) {
-          return;
-        }
+        if (
+          event.error ===
+          "not-allowed"
+        ) {
+          setError(
+            "Microphone permission was denied."
+          );
 
-        if (event.error === "not-allowed") {
-          setError("Microphone permission was denied.");
-
-          setVoiceText("Microphone permission denied.");
-        } else if (event.error === "no-speech") {
-          setError("No speech detected.");
-
-          setVoiceText("No speech detected.");
-        } else if (event.error === "audio-capture") {
-          setError("Could not access your microphone.");
-
-          setVoiceText("Could not access microphone.");
-        } else {
-          setError("Voice recognition failed.");
-
-          setVoiceText("Voice recognition failed.");
+          setVoiceText(
+            "Please allow microphone access."
+          );
         }
 
         /*
-         * Make sure microphone is no longer active.
+         * Microphone unavailable.
          */
-        shouldKeepListeningRef.current = false;
+        else if (
+          event.error ===
+          "audio-capture"
+        ) {
+          setError(
+            "Could not access your microphone."
+          );
 
-        recognitionRef.current = null;
+          setVoiceText(
+            "Could not access microphone."
+          );
+        }
+
+        /*
+         * Network problem.
+         */
+        else if (
+          event.error ===
+          "network"
+        ) {
+          setError(
+            "Voice recognition needs an internet connection."
+          );
+
+          setVoiceText(
+            "Voice recognition unavailable."
+          );
+        }
+
+        /*
+         * No speech.
+         */
+        else if (
+          event.error ===
+          "no-speech"
+        ) {
+          /*
+           * Don't treat this as a fatal
+           * microphone failure.
+           *
+           * If we already have text,
+           * finish it.
+           */
+          if (
+            finalTextRef.current.trim()
+          ) {
+            finishVoiceSearch();
+            return;
+          }
+
+          setError(
+            "No speech detected."
+          );
+
+          setVoiceText(
+            "No speech detected."
+          );
+        }
+
+        /*
+         * Other errors.
+         */
+        else {
+          setError(
+            "Voice recognition failed."
+          );
+
+          setVoiceText(
+            "Voice recognition failed."
+          );
+        }
+
+        /*
+         * IMPORTANT:
+         *
+         * Do NOT restart recognition here.
+         */
+        manuallyStoppedRef.current =
+          true;
+
+        recognitionRef.current =
+          null;
 
         setTimeout(() => {
-          setShowPopup(false);
-          setVoiceText("");
-        }, 1500);
+          if (
+            currentSession ===
+            sessionRef.current
+          ) {
+            setShowPopup(false);
+            setVoiceText("");
+          }
+        }, 1200);
       };
 
       /*
        * ======================================
-       * RECOGNITION ENDED
+       * ON END
        * ======================================
        */
+
       recognition.onend = () => {
-        console.log("🛑 Voice recognition ended");
+        /*
+         * Ignore old session.
+         */
+        if (
+          currentSession !==
+          sessionRef.current
+        ) {
+          return;
+        }
+
+        console.log(
+          "🛑 Recognition ended"
+        );
 
         /*
-         * If we intentionally stopped it,
-         * don't restart.
+         * IMPORTANT:
+         *
+         * NEVER call:
+         *
+         * recognition.start()
+         *
+         * here.
+         *
+         * Mobile Chrome can naturally end
+         * recognition and immediately restarting
+         * it causes the mic ON/OFF problem.
          */
-        if (!shouldKeepListeningRef.current) {
-          setRecording(false);
+
+        setRecording(false);
+
+        /*
+         * If the user already stopped it,
+         * do nothing.
+         */
+        if (
+          manuallyStoppedRef.current ||
+          finishingRef.current
+        ) {
+          return;
+        }
+
+        /*
+         * If we already have text,
+         * finish the search.
+         */
+        if (
+          finalTextRef.current.trim()
+        ) {
+          finishVoiceSearch();
 
           return;
         }
 
         /*
-         * Browser sometimes stops SpeechRecognition
-         * automatically.
-         *
-         * Restart it so the user can continue speaking.
+         * Otherwise close gracefully.
          */
-        try {
-          console.log("🔄 Restarting voice recognition...");
+        clearTimers();
 
-          recognition.start();
-        } catch (error) {
-          console.log("Could not restart recognition");
-        }
+        setShowPopup(false);
+        setVoiceText("");
+
+        recognitionRef.current =
+          null;
       };
 
       /*
@@ -452,55 +887,120 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
        * START
        * ======================================
        */
+
       recognition.start();
 
-      setShowPopup(true);
-
-      setVoiceText("Listening...");
+      console.log(
+        "🎤 Starting voice search..."
+      );
     } catch (error) {
-      console.error("❌ Could not start voice recognition:", error);
+      console.error(
+        "❌ Could not start voice recognition:",
+        error
+      );
 
+      /*
+       * Clean everything.
+       */
       completelyStopRecognition();
 
       setShowPopup(false);
 
-      setError("Could not start voice recognition.");
+      setVoiceText("");
+
+      setError(
+        "Could not start voice recognition."
+      );
     }
   };
 
   /*
    * ==========================================
-   * BUTTON CLICK
+   * MIC BUTTON
    * ==========================================
    */
+
   const handleMicClick = () => {
+    /*
+     * Don't allow another action while
+     * processing the search.
+     */
     if (loading) {
       return;
     }
 
+    /*
+     * If recording → manually finish.
+     */
     if (recording) {
-      /*
-       * User manually clicked mic to stop.
-       */
       finishVoiceSearch();
     } else {
       /*
-       * Start new voice search.
+       * Start a completely new session.
        */
       startRecording();
     }
   };
 
+  /*
+   * ==========================================
+   * CLEANUP WHEN COMPONENT UNMOUNTS
+   * ==========================================
+   */
+
+  useEffect(() => {
+    return () => {
+      clearTimers();
+
+      manuallyStoppedRef.current =
+        true;
+
+      finishingRef.current =
+        true;
+
+      sessionRef.current += 1;
+
+      const recognition =
+        recognitionRef.current;
+
+      if (recognition) {
+        try {
+          recognition.onstart = null;
+          recognition.onresult = null;
+          recognition.onerror = null;
+          recognition.onend = null;
+
+          recognition.abort();
+        } catch (error) {
+          console.log(
+            "Recognition already stopped"
+          );
+        }
+      }
+
+      recognitionRef.current =
+        null;
+    };
+  }, []);
+
+  /*
+   * ==========================================
+   * UI
+   * ==========================================
+   */
+
   return (
     <>
       {/* ================================= */}
-      {/* MICROPHONE BUTTON */}
+      {/* MOBILE MICROPHONE BUTTON */}
       {/* ================================= */}
 
       <div
         className="
+          relative
           flex
           w-full
+          min-w-0
           items-center
           justify-center
           lg:hidden
@@ -515,6 +1015,7 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
             flex
             h-14
             w-full
+            min-w-0
             items-center
             justify-center
             overflow-visible
@@ -528,10 +1029,15 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
                 : "bg-[#55A5F5] text-white hover:bg-[#3A8DE4]"
             }
 
-            ${loading ? "cursor-not-allowed opacity-70" : ""}
+            ${
+              loading
+                ? "cursor-not-allowed opacity-70"
+                : ""
+            }
           `}
         >
           {/* Recording animation */}
+
           {recording && (
             <>
               <span
@@ -558,9 +1064,17 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
             </>
           )}
 
-          <span className="relative z-10">
+          <span
+            className="
+              relative
+              z-10
+            "
+          >
             {loading ? (
-              <Loader2 size={26} className="animate-spin" />
+              <Loader2
+                size={26}
+                className="animate-spin"
+              />
             ) : recording ? (
               <MicOff size={26} />
             ) : (
@@ -569,16 +1083,25 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
           </span>
         </button>
 
-        {/* Error message */}
+        {/* Error */}
+
         {error && (
           <p
             className="
               absolute
-              mt-20
-              px-4
+              left-1/2
+              top-full
+              z-50
+              mt-2
+              w-[calc(100vw-32px)]
+              max-w-[360px]
+              -translate-x-1/2
+              break-words
+              px-2
               text-center
               text-xs
-              text-red-300
+              leading-4
+              text-red-500
             "
           >
             {error}
@@ -587,122 +1110,137 @@ export default function VoiceSearch({ onTextReceived }: VoiceSearchProps) {
       </div>
 
       {/* ================================= */}
-      {/* RESPONSIVE CENTER POPUP */}
+      {/* VOICE POPUP */}
       {/* ================================= */}
 
       {showPopup && (
         <div
           className="
-      fixed
-      inset-0
-      z-[9999]
-      flex
-      items-center
-      justify-center
-      overflow-hidden
-      bg-black/30
-      px-3
-      py-4
-    "
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            overflow-hidden
+            bg-black/30
+            p-4
+          "
         >
           <div
             className="
-        box-border
-        flex
-        w-full
-        max-w-[420px]
-        min-w-0
-        flex-col
-        overflow-hidden
-        rounded-2xl
-        bg-white
-        p-4
-        text-center
-        shadow-2xl
-
-        sm:p-5
-      "
+              box-border
+              flex
+              w-full
+              min-w-0
+              max-w-[420px]
+              flex-col
+              overflow-hidden
+              rounded-2xl
+              bg-white
+              p-4
+              text-center
+              shadow-2xl
+              sm:p-5
+            "
           >
-            {/* Mic */}
+            {/* Mic icon */}
+
             <div
               className={`
-          mx-auto
-          mb-3
-          flex
-          h-14
-          w-14
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
+                mx-auto
+                mb-4
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
 
-          ${recording ? "bg-red-100 text-red-500" : "bg-blue-100 text-blue-500"}
-        `}
+                ${
+                  recording
+                    ? "bg-red-100 text-red-500"
+                    : "bg-blue-100 text-blue-500"
+                }
+              `}
             >
-              {recording ? <Mic size={28} /> : <MicOff size={28} />}
+              {loading ? (
+                <Loader2
+                  size={28}
+                  className="animate-spin"
+                />
+              ) : recording ? (
+                <Mic size={28} />
+              ) : (
+                <MicOff size={28} />
+              )}
             </div>
 
             {/* Transcript */}
+
             <div
               className="
-          box-border
-          w-full
-          min-w-0
-          max-w-full
-          overflow-y-auto
-          overflow-x-hidden
-          rounded-xl
-          bg-gray-50
-          px-3
-          py-3
-
-          max-h-[35vh]
-          min-h-[52px]
-
-          sm:max-h-[40vh]
-          sm:px-4
-          sm:py-4
-        "
+                box-border
+                w-full
+                min-w-0
+                max-w-full
+                overflow-x-hidden
+                overflow-y-auto
+                rounded-xl
+                bg-gray-50
+                px-3
+                py-3
+                sm:px-4
+                sm:py-4
+              "
+              style={{
+                maxHeight:
+                  "40vh",
+                minHeight:
+                  "56px",
+              }}
             >
               <p
                 className="
-            m-0
-            w-full
-            min-w-0
-            max-w-full
-            whitespace-normal
-            break-words
-            text-sm
-            font-medium
-            leading-5
-            text-gray-800
-
-            sm:text-base
-            sm:leading-6
-
-            md:text-lg
-          "
+                  m-0
+                  w-full
+                  min-w-0
+                  max-w-full
+                  break-words
+                  whitespace-normal
+                  text-wrap
+                  text-sm
+                  font-medium
+                  leading-5
+                  text-gray-800
+                  sm:text-base
+                  sm:leading-6
+                  md:text-lg
+                "
               >
-                {voiceText || "Start speaking..."}
+                {voiceText ||
+                  "Start speaking..."}
               </p>
             </div>
 
-            {/* Helper text */}
+            {/* Helper */}
+
             {recording && (
               <p
                 className="
-            mt-3
-            w-full
-            max-w-full
-            px-1
-            text-[11px]
-            leading-4
-            text-gray-400
-
-            sm:mt-4
-            sm:text-xs
-            sm:leading-5
-          "
+                  mt-3
+                  w-full
+                  max-w-full
+                  break-words
+                  px-1
+                  text-[11px]
+                  leading-4
+                  text-gray-400
+                  sm:mt-4
+                  sm:text-xs
+                  sm:leading-5
+                "
               >
                 Speak now. Your words will appear here.
               </p>
