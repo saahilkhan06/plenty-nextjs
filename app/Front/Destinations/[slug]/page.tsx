@@ -1,5 +1,6 @@
 import { destinations } from "../data";
 import Headnav from "../../Components/Headnav/Headnav";
+import Link from "next/link";
 
 export default function DestinationPage({
   params,
@@ -52,12 +53,12 @@ export default function DestinationPage({
                 </p>
 
                 {/* Offer */}
-                <a
+                <Link
                   href="#"
                   className="mt-2 text-sm text-blue-500 hover:underline"
                 >
                   View Offer
-                </a>
+                </Link>
               </div>
             </div>
           ))}

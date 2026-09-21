@@ -11,7 +11,7 @@ import TravelDateSearch from "../search/TravelDateSearch";
 import StayingForSearch from "../search/StayingForSearch";
 import GuestsSearch from "../search/GuestsSearch";
 import Navbar from "../ui/Navbar";
-import VoiceSearch from "../../Fronttest/voice";
+import VoiceSearch from "../../fronttest/voice";
 
 const SLIDES = [
   "/assets/img/20260331180729_ph-1.jpg",
@@ -50,7 +50,7 @@ export default function Headnavtest() {
 
           {/* Logo */}
           <div className="flex shrink-0 items-center">
-            <Link href="/Front">
+            <Link href="/front">
               <Image
                 src="/assets/img/plenty-logo-2.png"
                 alt="Plenty Holidays Logo"
@@ -107,7 +107,7 @@ export default function Headnavtest() {
             </div>
 
             {/* Phone */}
-            <a
+            <Link
               href="tel:02039947646"
               aria-label="Call Plenty Holidays"
               className="
@@ -138,7 +138,7 @@ export default function Headnavtest() {
                   <span className="text-lg font-bold">11 pm</span>
                 </small>
               </span>
-            </a>
+            </Link>
 
             {/* Mobile menu */}
             <button

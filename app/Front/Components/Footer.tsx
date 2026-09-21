@@ -70,7 +70,7 @@ export default function Footer() {
             offers and flash sales
           </p>
           <div>
-            <Link href="/Front/enquery">
+            <Link href="/front/enquery">
               <button className="mt-5 bg-black text-white p-3 cursor-pointer rounded-2xl hover:bg-white  hover:text-black">
                 → Enquire Now
               </button>
@@ -141,7 +141,7 @@ export default function Footer() {
           <p className="font-semibold">🕐 Monday to Sunday: 8am to 11pm</p>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(({ label, href, path }) => (
-              <a
+              <Link
                 key={label}
                 target="_blank"
                 href={href}
@@ -156,7 +156,7 @@ export default function Footer() {
                 >
                   <path d={path} />
                 </svg>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

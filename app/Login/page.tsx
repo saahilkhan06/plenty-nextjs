@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { login } from "../Service/AuthService";
 import { storeAuthData } from "../Service/LocalStorage";
+import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
@@ -34,32 +35,32 @@ export default function Login() {
       console.log("Login response:", response);
 
       if (response?.success && response?.data) {
-
         // Save token/user information
         storeAuthData(response.data);
 
         // Redirect
         router.push("/Admin");
-
       } else {
         setError(
-          response?.message || "Login failed"
+          response?.message || "Invalid email or password"
         );
       }
-
     } catch (error: any) {
-  console.error("Login error:", error);
-  console.log("API error:", error?.response?.data);
+      console.error("Login error:", error);
+      console.log("API error:", error?.response?.data);
 
-  setError(
-    error?.response?.data?.message ||
-    "Invalid email or password"
-  );
-}
+      setError(
+        error?.response?.data?.message ||
+        "Invalid email or password"
+      );
+    } finally {
+      // Always stop loading
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
+    <div className="min-h-screen flex items-center justify-center">
 
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
 
@@ -77,7 +78,6 @@ export default function Login() {
         >
 
           {/* Email */}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Email
@@ -87,16 +87,13 @@ export default function Login() {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
               required
             />
           </div>
 
           {/* Password */}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Password
@@ -106,16 +103,13 @@ export default function Login() {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
               required
             />
           </div>
 
           {/* Error */}
-
           {error && (
             <p className="text-sm text-red-600">
               {error}
@@ -123,22 +117,42 @@ export default function Login() {
           )}
 
           {/* Login */}
-
           <button
             type="submit"
             disabled={loading}
             className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading
-              ? "Logging in..."
-              : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
-        <a href="/Login/Forgotpassword" className="flex justify-center mt-5">ForgotPassword?</a>
+
+        <Link
+          href="/Login/Forgotpassword"
+          className="mt-5 flex justify-center"
+        >
+          Forgot Password?
+        </Link>
 
       </div>
 
     </div>
   );
 }
+
+// src/app/Login/page.tsx
+
+// "use client";
+
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation";
+
+// export default function Login() {
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     router.replace("/Admin");
+//   }, [router]);
+
+//   return null;
+// }

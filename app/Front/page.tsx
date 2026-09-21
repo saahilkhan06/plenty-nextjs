@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import "./global.css";
+import Link from "next/link";
 
 // import Navbar from "./Components/ui/Navbar";
 import Headnav from "./Components/Headnav/Headnav";
@@ -173,7 +174,7 @@ export default function HomePage() {
       </div>
       <section className="mx-auto grid max-w-325 grid-cols-1 gap-4 px-5 py-10 sm:grid-cols-3 ">
         {CATEGORIES.map((c, i) => (
-          <a
+          <Link
             key={`${c.label}-${i}`}
             href="#"
             className="overflow-hidden animated-underline rounded-md bg-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_22px_rgba(0,0,0,0.18)]"
@@ -191,7 +192,7 @@ export default function HomePage() {
                 {c.label}
               </span>
             </div>
-          </a>
+          </Link>
         ))}
       </section>
       <MobileFooter />

@@ -113,6 +113,7 @@
 //   );
 // };
 
+import Link from "next/link";
 import React from "react";
 import {
   FiArrowUpRight,
@@ -223,13 +224,13 @@ const TableRow = ({
   return (
     <tr className={order % 2 ? "bg-stone-100 text-sm" : "text-sm"}>
       <td className="p-1.5">
-        <a
+        <Link
           href="#"
           className="flex items-center gap-1 text-violet-600 underline"
         >
           {cusId}
           <FiArrowUpRight />
-        </a>
+        </Link>
       </td>
 
       <td className="p-1.5">{sku}</td>

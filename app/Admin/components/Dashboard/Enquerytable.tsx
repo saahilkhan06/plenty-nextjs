@@ -9,6 +9,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { getAllEnquiries } from "../../../Service/enquiryService";
 import { Enquiry } from "../../../types/enquery";
+import Link from "next/link";
 
 export default function EnquiryTable() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
@@ -70,14 +71,14 @@ export default function EnquiryTable() {
                 <td className="p-1.5">{enquiry.numberOfTravels}</td>
 
                 <td className="p-1.5">
-                  <a
+                  <Link
                     href={enquiry.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-violet-600 underline"
                   >
                     {enquiry.url}
-                  </a>
+                  </Link>
                 </td>
 
                 <td

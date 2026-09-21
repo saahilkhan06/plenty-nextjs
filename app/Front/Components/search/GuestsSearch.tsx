@@ -5,6 +5,7 @@ import { BedDouble } from "lucide-react";
 import SearchField from "../ui/SearchField";
 import DropdownActions from "../ui/DropdownActions";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import Link from "next/link";
 
 interface Room {
   adults: number;
@@ -146,9 +147,9 @@ export default function GuestsSearch() {
 
         <p className="mt-6 text-sm text-blue-800">
           If you would like to book more rooms, call our sales team on{" "}
-          <a href="tel:02039947646" className="font-semibold text-blue-800">
+          <Link href="tel:02039947646" className="font-semibold text-blue-800">
             0203 994 7646
-          </a>
+          </Link>
         </p>
         <button
           type="button"

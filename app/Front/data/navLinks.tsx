@@ -29,10 +29,10 @@ export const NAV_LINKS: NavLink[] = [
         type: "flat",
         title: "Deals Offers",
         items: [
-          { label: "Affordable Luxury", href: "/Front/Holidays/affordable-luxury" },
-          { label: "All Inclusive Holidays", href: "/Front/Holidays/all-inclusive" },
-          { label: "Last Minute Deals", href: "/Front/Holidays/last-minute" },
-          { label: "Romantic Escapes", href: "/Front/Holidays/romantic-escapes" },
+          { label: "Affordable Luxury", href: "/front/Holidays/affordable-luxury" },
+          { label: "All Inclusive Holidays", href: "/front/Holidays/all-inclusive" },
+          { label: "Last Minute Deals", href: "/front/Holidays/last-minute" },
+          { label: "Romantic Escapes", href: "/front/Holidays/romantic-escapes" },
           
         ],
       },
@@ -40,9 +40,9 @@ export const NAV_LINKS: NavLink[] = [
         type: "flat",
         title: "Holiday Type",
         items: [
-          { label: "Beach Holidays", href: "/Front/Holidays/beach" },
-          { label: "Cheap Holidays", href: "/Front/Holidays/cheap" },
-          { label: "City Breaks", href: "/Front/Holidays/city-breaks" },
+          { label: "Beach Holidays", href: "/front/Holidays/beach" },
+          { label: "Cheap Holidays", href: "/front/Holidays/cheap" },
+          { label: "City Breaks", href: "/front/Holidays/city-breaks" },
         ],
       },
       {
@@ -81,9 +81,9 @@ export const NAV_LINKS: NavLink[] = [
           {
             label: "Balearic Islands",
             children: [
-              { label: "Ibiza", href: "/Front/Destinations/ibiza" },
-              { label: "Majorca", href: "/Front/Destinations/majorca" },
-              { label: "Menorca", href: "/Front/Destinations/menorca" },
+              { label: "Ibiza", href: "/front/Destinations/ibiza" },
+              { label: "Majorca", href: "/front/Destinations/majorca" },
+              { label: "Menorca", href: "/front/Destinations/menorca" },
             ],
           },
           {
@@ -146,12 +146,12 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  { label: "Nile Cruise", hasDropdown: false, href: "/Front/nilecruise" },
+  { label: "Nile Cruise", hasDropdown: false, href: "/front/nilecruise" },
   {
     label: "Multi Centre Holidays",
     hasDropdown: false,
-    href: "/Front/Multicentre",
+    href: "/front/Multicentre",
   },
-  { label: "Blog", hasDropdown: false, href: "/Front/blog" },
-  { label: "Help", hasDropdown: false, href: "/Front/help" },
+  { label: "Blog", hasDropdown: false, href: "/front/blog" },
+  { label: "Help", hasDropdown: false, href: "/front/help" },
 ];

@@ -13,7 +13,7 @@ export default function Mainnav() {
     <div className="border-b bg-white">
       <div className="mx-auto flex max-w-\[1400px\] flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div className="flex items-center gap-3">
-          <Link href={"/Front"}>
+          <Link href={"/front"}>
             <Image
               src="/assets/img/plenty-logo-2.png"
               alt="Plenty Holidays Logo"
@@ -54,7 +54,7 @@ export default function Mainnav() {
             </span>
           </div>
 
-          <a
+          <Link
             href="tel:02039947646"
             className="flex items-center gap-2 rounded-2xl bg-blue-900 px-5 py-2.5 font-bold text-white"
           >
@@ -68,7 +68,7 @@ export default function Mainnav() {
                 <span className="font-bold text-lg">11 pm</span>
               </small>
             </span>
-          </a>
+          </Link>
 
           <button
             onClick={() => setMenuOpen((o) => !o)}

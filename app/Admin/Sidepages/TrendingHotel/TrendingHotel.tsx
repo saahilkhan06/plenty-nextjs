@@ -37,15 +37,23 @@ export default function TrendingHotel() {
       columns={[
         {
           key: "destination",
-          label: "Destination",
+          label: "Type",
         },
         {
           key: "airportCode",
-          label: "Airport Code",
+          label: "Hotel Name",
         },
         {
-          key: "image",
-          label: "Image",
+          key: "airportCode",
+          label: "Select Rating",
+        },
+        {
+          key: "airportCode",
+          label: "Nights",
+        },
+        {
+          key: "airportCode",
+          label: "Price",
         },
         {
           key: "status",

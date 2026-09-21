@@ -29,7 +29,7 @@ const destinations = [
   },
 ];
 
-export default function TrendingCategory() {
+export default function HolidayCenterEnquiry() {
   return (
     <AdminTable
       title="Destinations"
@@ -37,7 +37,15 @@ export default function TrendingCategory() {
       columns={[
         {
           key: "destination",
-          label: "Title",
+          label: "Destination",
+        },
+        {
+          key: "airportCode",
+          label: "Airport Code",
+        },
+        {
+          key: "image",
+          label: "Image",
         },
         {
           key: "status",

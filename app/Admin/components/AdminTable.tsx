@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
+import {
+  FiEdit2,
+  FiPlus,
+  FiSearch,
+  FiTrash2,
+} from "react-icons/fi";
 
 type Column<T> = {
   key: keyof T;
@@ -13,6 +18,9 @@ type AdminTableProps<T extends { id: number }> = {
   searchPlaceholder?: string;
   columns: Column<T>[];
   data: T[];
+  onAdd: () => void;
+  onEdit: (item: T) => void;
+  onDelete: (id: number) => void;
 };
 
 export default function AdminTable<T extends { id: number }>({
@@ -20,6 +28,9 @@ export default function AdminTable<T extends { id: number }>({
   searchPlaceholder = "Search...",
   columns,
   data,
+  onAdd,
+  onEdit,
+  onDelete,
 }: AdminTableProps<T>) {
   const [search, setSearch] = useState("");
 
@@ -46,7 +57,9 @@ export default function AdminTable<T extends { id: number }>({
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-stone-200 px-5 py-2">
         <div>
-          <h1 className="text-xl font-semibold text-stone-800">{title}</h1>
+          <h1 className="text-xl font-semibold text-stone-800">
+            {title}
+          </h1>
 
           <p className="mt-1 text-sm text-stone-500">
             Manage {title.toLowerCase()} here.
@@ -55,7 +68,8 @@ export default function AdminTable<T extends { id: number }>({
 
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
+          onClick={onAdd}
+          className="flex cursor-pointer items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
         >
           <FiPlus />
           Add New
@@ -137,18 +151,22 @@ export default function AdminTable<T extends { id: number }>({
 
                   {/* ACTIONS */}
                   <td className="px-5 py-1">
-                    <div className="flex items-center gap-2 ">
+                    <div className="flex items-center gap-2">
+                      {/* EDIT */}
                       <button
                         type="button"
-                        className="flex items-center gap-1.5 rounded-md border border-blue-200 px-2 text-xs font-medium text-blue-600 hover:bg-blue-200"
+                        onClick={() => onEdit(item)}
+                        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-blue-200 px-2 text-xs font-medium text-blue-600 hover:bg-blue-200"
                       >
                         <FiEdit2 />
                         Edit
                       </button>
 
+                      {/* DELETE */}
                       <button
                         type="button"
-                        className="flex items-center gap-1.5 rounded-md border border-red-200 px-2  text-xs font-medium text-red-600 hover:bg-red-200"
+                        onClick={() => onDelete(item.id)}
+                        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-red-200 px-2 text-xs font-medium text-red-600 hover:bg-red-200"
                       >
                         <FiTrash2 />
                         Delete

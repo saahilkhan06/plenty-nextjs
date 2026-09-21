@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { NAV_LINKS } from "../../data/navLinks";
+import Link from "next/link";
 
 export default function Nav() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -79,13 +80,16 @@ export default function Nav() {
                     }`}
                   />
                 </button>
-              ) : (
-                <a href={link.href} className="group flex items-center gap-1">
+              ) : link.href ? (
+                <Link
+                  href={link.href}
+                  className="group flex items-center gap-1"
+                >
                   <span className="relative animated-underline">
                     {link.label}
                   </span>
-                </a>
-              )}
+                </Link>
+              ) : null}
 
               {/* DROPDOWN FOR THIS MENU */}
               {isOpen && link.dropdownColumns && (
@@ -151,12 +155,12 @@ export default function Nav() {
                                       isLarge ? "mb-3 break-inside-avoid" : ""
                                     }
                                   >
-                                    <a
+                                    <Link
                                       href={item.href}
                                       className="font-semibold text-gray-800 hover:text-blue-600"
                                     >
                                       {item.label}
-                                    </a>
+                                    </Link>
                                   </li>
                                 ))}
                               </ul>
@@ -210,14 +214,14 @@ export default function Nav() {
                                         {country.label}
                                         <ChevronRight size={14} />
                                       </button>
-                                    ) : (
-                                      <a
+                                    ) : country.href ? (
+                                      <Link
                                         href={country.href}
                                         className="block py-1 text-gray-800 hover:text-blue-600"
                                       >
                                         {country.label}
-                                      </a>
-                                    )}
+                                      </Link>
+                                    ) : null}
                                   </li>
                                 ))}
                               </ul>
@@ -229,12 +233,12 @@ export default function Nav() {
                                 <ul className="max-h-60 space-y-1 overflow-y-auto sm:max-h-105">
                                   {active.children.map((city) => (
                                     <li key={city.label}>
-                                      <a
+                                      <Link
                                         href={city.href}
                                         className="block py-1 font-semibold text-gray-800 hover:text-blue-600"
                                       >
                                         {city.label}
-                                      </a>
+                                      </Link>
                                     </li>
                                   ))}
                                 </ul>

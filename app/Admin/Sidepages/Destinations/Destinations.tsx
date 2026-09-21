@@ -1,8 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import AdminTable from "../../components/AdminTable";
+import NewDestinationForm from "./NewDestinationForm";
 
-const destinations = [
+type Destination = {
+  id: number;
+  destination: string;
+  airportCode: string;
+  image: string;
+  status: string;
+};
+
+const initialDestinations: Destination[] = [
   {
     id: 1,
     destination: "Maldives",
@@ -30,10 +40,86 @@ const destinations = [
 ];
 
 export default function Destinations() {
+  const [destinations, setDestinations] =
+    useState<Destination[]>(initialDestinations);
+
+  const [showForm, setShowForm] = useState(false);
+
+  const [editingDestination, setEditingDestination] =
+    useState<Destination | null>(null);
+
+  // ADD
+  const handleAdd = () => {
+    setEditingDestination(null);
+    setShowForm(true);
+  };
+
+  // EDIT
+  const handleEdit = (destination: Destination) => {
+    setEditingDestination(destination);
+    setShowForm(true);
+  };
+
+  // DELETE
+  const handleDelete = (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this destination?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDestinations((prev) =>
+      prev.filter((destination) => destination.id !== id)
+    );
+  };
+
+  // SAVE
+  const handleSave = (destination: Destination) => {
+    // EDIT EXISTING
+    if (editingDestination) {
+      setDestinations((prev) =>
+        prev.map((item) =>
+          item.id === destination.id ? destination : item
+        )
+      );
+    }
+
+    // ADD NEW
+    else {
+      setDestinations((prev) => [
+        ...prev,
+        destination,
+      ]);
+    }
+
+    setShowForm(false);
+    setEditingDestination(null);
+  };
+
+  // FORM
+  if (showForm) {
+    return (
+      <NewDestinationForm
+        onBack={() => {
+          setShowForm(false);
+          setEditingDestination(null);
+        }}
+        onSave={handleSave}
+        editingDestination={editingDestination}
+      />
+    );
+  }
+
+  // TABLE
   return (
     <AdminTable
       title="Destinations"
       searchPlaceholder="Search destinations..."
+      onAdd={handleAdd}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
       columns={[
         {
           key: "destination",

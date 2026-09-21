@@ -1,13 +1,11 @@
 "use client";
-import {
-  Hotel,Umbrella
-} from "lucide-react";
+import { Hotel, Umbrella } from "lucide-react";
 import { useState } from "react";
-import DestinationSearch from "../Components/search/DestinationSearch";
-import DepartureSearch from "../Components/search/DepartureSearch";
-import TravelDateSearch from "../Components/search/TravelDateSearch";
-import StayingForSearch from "../Components/search/StayingForSearch";
-import GuestsSearch from "../Components/search/GuestsSearch";
+import DestinationSearch from "./search/DestinationSearch";
+import DepartureSearch from "./search/DepartureSearch";
+import TravelDateSearch from "./search/TravelDateSearch";
+import StayingForSearch from "./search/StayingForSearch";
+import GuestsSearch from "./search/GuestsSearch";
 
 export default function searchbar() {
   const [tab, setTab] = useState<"flight" | "hotel">("flight");
