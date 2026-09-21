@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AdminTable from "../../components/AdminTable";
-import NewDestinationForm from "./NewDestinationForm";
+// import NewDestinationForm from "./NewDestinationForm";
 
 type Destination = {
   id: number;
@@ -49,77 +49,77 @@ export default function Destinations() {
     useState<Destination | null>(null);
 
   // ADD
-  const handleAdd = () => {
-    setEditingDestination(null);
-    setShowForm(true);
-  };
+  // const handleAdd = () => {
+  //   setEditingDestination(null);
+  //   setShowForm(true);
+  // };
 
-  // EDIT
-  const handleEdit = (destination: Destination) => {
-    setEditingDestination(destination);
-    setShowForm(true);
-  };
+  // // EDIT
+  // const handleEdit = (destination: Destination) => {
+  //   setEditingDestination(destination);
+  //   setShowForm(true);
+  // };
 
-  // DELETE
-  const handleDelete = (id: number) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this destination?"
-    );
+  // // DELETE
+  // const handleDelete = (id: number) => {
+  //   const confirmed = window.confirm(
+  //     "Are you sure you want to delete this destination?"
+  //   );
 
-    if (!confirmed) {
-      return;
-    }
+    // if (!confirmed) {
+    //   return;
+    // }
 
-    setDestinations((prev) =>
-      prev.filter((destination) => destination.id !== id)
-    );
-  };
+  //   setDestinations((prev) =>
+  //     prev.filter((destination) => destination.id !== id)
+  //   );
+  // };
 
-  // SAVE
-  const handleSave = (destination: Destination) => {
-    // EDIT EXISTING
-    if (editingDestination) {
-      setDestinations((prev) =>
-        prev.map((item) =>
-          item.id === destination.id ? destination : item
-        )
-      );
-    }
+  // // SAVE
+  // const handleSave = (destination: Destination) => {
+  //   // EDIT EXISTING
+  //   if (editingDestination) {
+  //     setDestinations((prev) =>
+  //       prev.map((item) =>
+  //         item.id === destination.id ? destination : item
+  //       )
+  //     );
+  //   }
 
-    // ADD NEW
-    else {
-      setDestinations((prev) => [
-        ...prev,
-        destination,
-      ]);
-    }
+  //   // ADD NEW
+  //   else {
+  //     setDestinations((prev) => [
+  //       ...prev,
+  //       destination,
+  //     ]);
+  //   }
 
-    setShowForm(false);
-    setEditingDestination(null);
-  };
+  //   setShowForm(false);
+  //   setEditingDestination(null);
+  // };
 
   // FORM
-  if (showForm) {
-    return (
-      <NewDestinationForm
-        onBack={() => {
-          setShowForm(false);
-          setEditingDestination(null);
-        }}
-        onSave={handleSave}
-        editingDestination={editingDestination}
-      />
-    );
-  }
+  // if (showForm) {
+  //   return (
+  //     <NewDestinationForm
+  //       onBack={() => {
+  //         setShowForm(false);
+  //         setEditingDestination(null);
+  //       }}
+  //       onSave={handleSave}
+  //       editingDestination={editingDestination}
+  //     />
+  //   );
+  // }
 
   // TABLE
   return (
     <AdminTable
       title="Destinations"
       searchPlaceholder="Search destinations..."
-      onAdd={handleAdd}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
+      // onAdd={handleAdd}
+      // onEdit={handleEdit}
+      // onDelete={handleDelete}
       columns={[
         {
           key: "destination",

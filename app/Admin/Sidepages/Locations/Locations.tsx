@@ -51,7 +51,6 @@ export default function Locations() {
   return (
     <AdminTable
       title="Locations"
-      addLabel="Add Location"
       searchPlaceholder="Search locations..."
       columns={[
         {
