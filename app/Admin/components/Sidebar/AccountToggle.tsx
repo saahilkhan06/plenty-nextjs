@@ -1,26 +1,74 @@
-import Link from "next/link";
+"use client";
+
 import React from "react";
 
+type AccountToggleProps = {
+  sidebarOpen: boolean;
+};
 
-export const AccountToggle = () => {
+export const AccountToggle = ({
+  sidebarOpen,
+}: AccountToggleProps) => {
   return (
-    <div className="border-b mb-4 mt-2 pb-4 border-stone-300 text-white">
-      <Link href="https://plenty-nextjs.onrender.com">
-      <button  className="flex p-0.5 relative gap-3 w-full items-center">
+    <div
+      className={`
+        border-b
+        border-slate-700
+        pb-4
+        mb-4
+        ${sidebarOpen ? "mt-2" : "mt-2"}
+      `}
+    >
+      <button
+        type="button"
+        className={`
+          flex
+          w-full
+          items-center
+          rounded
+          p-1
+          transition
+          hover:bg-slate-800
+
+          ${
+            sidebarOpen
+              ? "gap-2"
+              : "justify-center"
+          }
+        `}
+      >
+        {/* LOGO */}
+
         <img
-          src="../iconplenty.png"
-          alt="avatar"
-          className="size-8 rounded shrink-0 bg-white shadow"
+          src="/iconplenty.png"
+          alt="Plenty Holidays"
+          className="
+            h-10
+            w-10
+            bg-white
+            shrink-0
+            rounded
+            object-fill
+          "
         />
-        <div className="text-start">
-          <span className="text-sm font-bold block">Plenty Holidays </span>
-          <span className="text-xs block ">
-            Plentyholidays@gmail.com
-          </span>
-        </div>
-        
+
+        {/* ACCOUNT DETAILS */}
+
+        {sidebarOpen && (
+          <>
+            <div className="min-w-0 flex-1 text-left">
+              <span className="block whitespace-nowrap text-sm font-bold text-white">
+                Plenty Holidays
+              </span>
+
+              <span className="block whitespace-nowrap text-xs text-slate-400">
+                Plentyholidays@gmail.com
+              </span>
+            </div>
+
+          </>
+        )}
       </button>
-      </Link>
     </div>
   );
 };

@@ -52,83 +52,145 @@
 // };
 "use client";
 
-import React, { Dispatch, SetStateAction } from "react";
+// import React, { Dispatch, SetStateAction } from "react";
+// import { AccountToggle } from "./AccountToggle";
+// import { RouteSelect } from "./RouteSelect";
+// import { FiX } from "react-icons/fi";
+
+// export const Sidebar = ({
+//   open,
+//   setOpen,
+// }: {
+//   open: boolean;
+//   setOpen: Dispatch<SetStateAction<boolean>>;
+// }) => {
+//   return (
+//     <>
+//       {/* Mobile overlay */}
+//       {open && (
+//         <div
+//           className="fixed inset-0 z-[9997] bg-black/50 lg:hidden"
+//           onClick={() => setOpen(false)}
+//         />
+//       )}
+
+//       <aside
+//         className={`
+//           fixed
+//           left-0
+//           top-0
+//           z-[9998]
+//           h-screen
+//           w-[220px]
+//           bg-gray-800
+//           transition-transform
+//           duration-300
+//           lg:sticky
+//           lg:z-auto
+//           lg:top-0
+//           lg:h-screen
+//           lg:w-full
+//           lg:translate-x-0
+
+//           ${
+//             open
+//               ? "translate-x-0"
+//               : "-translate-x-full lg:translate-x-0"
+//           }
+//         `}
+//       >
+//         {/* Mobile close button */}
+//         <button
+//           type="button"
+//           onClick={() => setOpen(false)}
+//           className="
+//             absolute
+//             right-3
+//             top-3
+//             z-10
+//             flex
+//             h-8
+//             w-8
+//             items-center
+//             justify-center
+//             rounded-lg
+//             bg-gray-700
+//             text-white
+//             lg:hidden
+//           "
+//           aria-label="Close sidebar"
+//         >
+//           <FiX className="text-lg" />
+//         </button>
+
+//         <div className="h-full overflow-y-auto overflow-x-hidden px-2">
+//           <AccountToggle />
+
+//           <RouteSelect />
+//         </div>
+//       </aside>
+//     </>
+//   );
+// };
+
+"use client";
+
+import React from "react";
+import { FiMenu } from "react-icons/fi";
+
 import { AccountToggle } from "./AccountToggle";
 import { RouteSelect } from "./RouteSelect";
-import { FiX } from "react-icons/fi";
 
-export const Sidebar = ({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-}) => {
+type SidebarProps = {
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
-    <>
-      {/* Mobile overlay */}
-      {open && (
+    <aside className="h-screen w-full overflow-hidden bg-slate-900 text-white">
+      <div className="h-full overflow-y-auto px-2">
+        {/* HAMBURGER */}
         <div
-          className="fixed inset-0 z-[9997] bg-black/50 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      <aside
-        className={`
-          fixed
-          left-0
-          top-0
-          z-[9998]
-          h-screen
-          w-[220px]
-          bg-gray-800
-          transition-transform
-          duration-300
-          lg:sticky
-          lg:z-auto
-          lg:top-0
-          lg:h-screen
-          lg:w-full
-          lg:translate-x-0
-          
-          ${
-            open
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
-          }
-        `}
-      >
-        {/* Mobile close button */}
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="
-            absolute
-            right-3
-            top-3
-            z-10
+          className={`
             flex
-            h-8
-            w-8
+            h-[60px]
             items-center
-            justify-center
-            rounded-lg
-            bg-gray-700
-            text-white
-            lg:hidden
-          "
-          aria-label="Close sidebar"
+            border-b
+            border-slate-700
+            ${sidebarOpen ? "justify-end px-3" : "justify-center px-0"}
+          `}
         >
-          <FiX className="text-lg" />
-        </button>
-
-        <div className="h-full overflow-y-auto overflow-x-hidden px-2">
-          <AccountToggle />
-
-          <RouteSelect />
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-md
+              text-slate-300
+              transition
+              hover:bg-slate-700
+              hover:text-white
+            "
+          >
+            <FiMenu size={22} />
+          </button>
         </div>
-      </aside>
-    </>
+
+        {/* ACCOUNT */}
+        <div className="px-2">
+          <AccountToggle sidebarOpen={sidebarOpen} />
+        </div>
+
+        {/* ROUTES */}
+        <div className="px-2">
+          <RouteSelect sidebarOpen={sidebarOpen} />
+        </div>
+      </div>
+    </aside>
   );
 };
