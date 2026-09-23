@@ -71,14 +71,23 @@ export default function EnquiryTable() {
                 <td className="p-1.5">{enquiry.numberOfTravels}</td>
 
                 <td className="p-1.5">
-                  <Link
-                    href={enquiry.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-violet-600 underline"
-                  >
-                    {enquiry.url}
-                  </Link>
+                  {enquiry.url ? (
+                    <a
+                      href={
+                        enquiry.url.startsWith("http://") ||
+                        enquiry.url.startsWith("https://")
+                          ? enquiry.url
+                          : `https://${enquiry.url}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 underline"
+                    >
+                      {enquiry.url}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
                 </td>
 
                 <td

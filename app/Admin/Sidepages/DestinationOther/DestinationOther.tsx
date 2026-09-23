@@ -1,8 +1,18 @@
 "use client";
 
 import AdminTable from "../../components/AdminTable";
+import OtherDestinationForm from "./Otherform";
+import { useAdminCrud } from "../../hooks/useAdminCrud";
 
-const destinations = [
+type OtherDestination = {
+  id: number;
+  destination: string;
+  airportCode: string;
+  image: string;
+  status: string;
+};
+
+const initialDestinations: OtherDestination[] = [
   {
     id: 1,
     destination: "Maldives",
@@ -27,45 +37,62 @@ const destinations = [
       "https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=800&q=80",
     status: "Active",
   },
+  {
+    id: 4,
+    destination: "Bali",
+    airportCode: "DPS",
+    image:
+      "https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=800&q=80",
+    status: "Active",
+  },
 ];
 
-export default function DestinationOther() {
+export default function OtherDestinations() {
+  const {
+    data: destinations,
+    showForm,
+    editingItem: editingDestination,
+    handleAdd,
+    handleEdit,
+    handleDelete,
+    handleSave,
+    handleBack,
+  } = useAdminCrud<OtherDestination>({
+    initialData: initialDestinations,
+    deleteMessage: "Are you sure you want to delete this destination?",
+  });
+
+  // FORM
+  if (showForm) {
+    return (
+      <OtherDestinationForm
+        onBack={handleBack}
+        onSave={handleSave}
+        editingDestination={editingDestination}
+      />
+    );
+  }
+
+  // TABLE
   return (
     <AdminTable
-      title="Other Destinations"
+      title="Sub Destinations"
       searchPlaceholder="Search destinations..."
+      onAdd={handleAdd}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
       columns={[
         {
           key: "destination",
           label: "Destination",
         },
         {
-          key: "airportCode",
+          key: "destination",
           label: "Main Destination",
         },
         {
           key: "airportCode",
           label: "Airport Code",
-        },
-        {
-          key: "airportCode",
-          label: "Latitude",
-        },
-        {
-          key: "airportCode",
-          label: "Longitude",
-        },
-        {
-          key: "airportCode",
-          label: "Radius in KM",
-        },
-        {
-          key: "airportCode",
-          label: "Min Rate",
-        },
-        {
-          key: "airportCode",
-          label: "Max Rate",
         },
         {
           key: "image",

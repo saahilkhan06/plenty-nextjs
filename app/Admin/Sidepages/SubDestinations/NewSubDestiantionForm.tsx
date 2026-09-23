@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { baseUrlPlenty } from "../../../Service/HelperPlenty";
-type OtherDestination = {
+type NewDestination = {
   id: number;
   destination: string;
   airportCode: string;
@@ -10,17 +10,17 @@ type OtherDestination = {
   status: string;
 };
 
-type OtherDestinationFormProps = {
+type NewDestinationFormProps = {
   onBack: () => void;
-  onSave: (destination: OtherDestination) => void;
-  editingDestination: OtherDestination | null;
+  onSave: (destination: NewDestination) => void;
+  editingDestination: NewDestination | null;
 };
 
 export default function NewSubDestinationForm({
   onBack,
   onSave,
   editingDestination,
-}: OtherDestinationFormProps) {
+}: NewDestinationFormProps) {
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -189,7 +189,7 @@ export default function NewSubDestinationForm({
       console.log("API response:", result);
 
       // Update the local table after successful API request
-      const OtherDestination: OtherDestination = {
+      const newDestination: NewDestination = {
         id:
           result?.data?.id ||
           result?.id ||
@@ -210,7 +210,7 @@ export default function NewSubDestinationForm({
         status: formData.status === "1" ? "Active" : "Inactive",
       };
 
-      onSave(OtherDestination);
+      onSave(newDestination);
     } catch (error) {
       console.error("Error saving destination:", error);
 
@@ -252,7 +252,7 @@ export default function NewSubDestinationForm({
       <div className="flex items-center justify-between border-b border-stone-200 px-5 py-3">
         <div>
           <h1 className="text-xl font-semibold text-stone-800">
-            Add Other Destination
+            Add Sub Destination
           </h1>
         </div>
 
@@ -296,7 +296,7 @@ export default function NewSubDestinationForm({
         {/* GENERAL INFORMATION */}
         <FormSection title="General Information">
           <FormInput
-            label="URL Destination"
+            label="URL"
             name="url"
             value={formData.url}
             onChange={handleChange}
@@ -309,15 +309,31 @@ export default function NewSubDestinationForm({
             onChange={handleChange}
           />
           <FormInput
-            label="URL Main Destination"
-            name="url"
-            value={formData.url}
-            onChange={handleChange}
-          />
-          <FormInput
             label="Main Destination"
             name="destination"
             value={formData.destination}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Sub Title"
+            name="subTitle"
+            value={formData.subTitle}
+            onChange={handleChange}
+            rows={1}
+          />
+
+          <FormInput
+            label="Destination TSS ID"
+            name="destinationTssId"
+            value={formData.destinationTssId}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Country Code 2 Letter"
+            name="countryCode"
+            value={formData.countryCode}
             onChange={handleChange}
           />
 
@@ -337,24 +353,6 @@ export default function NewSubDestinationForm({
 
           <FormInput
             label="Longitude"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-          />
-          <FormInput
-            label="Radius in KM"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-          />
-          <FormInput
-            label="Min Rate"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-          />
-          <FormInput
-            label="Max Rate"
             name="longitude"
             value={formData.longitude}
             onChange={handleChange}
@@ -403,28 +401,245 @@ export default function NewSubDestinationForm({
             </div>
           </div>
 
-          
+          <FormInput
+            label="Hotel Giata"
+            name="hotelGiata"
+            value={formData.hotelGiata}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Star Rating"
+            name="starRating"
+            value={formData.starRating}
+            onChange={handleChange}
+          />
         </FormSection>
 
         {/* SHOW IN PAGES */}
         <FormSection title="Show in Pages">
+          <FormCheckbox
+            label="Show in Popular Menus"
+            name="showPopularMenus"
+            checked={formData.showPopularMenus}
+            onChange={handleChange}
+          />
+
+          <FormCheckbox
+            label="Show in All Destination Menus"
+            name="showAllDestinationMenus"
+            checked={formData.showAllDestinationMenus}
+            onChange={handleChange}
+          />
+
+          <FormCheckbox
+            label="Show in Cities Menus"
+            name="showCitiesMenus"
+            checked={formData.showCitiesMenus}
+            onChange={handleChange}
+          />
+
           <FormCheckbox
             label="Show in Search"
             name="showInSearch"
             checked={formData.showInSearch}
             onChange={handleChange}
           />
+
+          <FormCheckbox
+            label="Show in Search Top Seller"
+            name="showSearchTopSeller"
+            checked={formData.showSearchTopSeller}
+            onChange={handleChange}
+          />
+
+          <FormCheckbox
+            label="Show in Search Top City"
+            name="showSearchTopCity"
+            checked={formData.showSearchTopCity}
+            onChange={handleChange}
+          />
         </FormSection>
 
         {/* CONTENT */}
+        <FormSection title="Content">
+          <FormTextarea
+            label="Information"
+            name="information"
+            value={formData.information}
+            onChange={handleChange}
+            rows={4}
+          />
+
+          <FormTextarea
+            label="Things to Do"
+            name="thingsToDo"
+            value={formData.thingsToDo}
+            onChange={handleChange}
+            rows={4}
+          />
+
+          <FormTextarea
+            label="Deals"
+            name="deals"
+            value={formData.deals}
+            onChange={handleChange}
+            rows={4}
+          />
+
+          <FormTextarea
+            label="Travel Guide"
+            name="travelGuide"
+            value={formData.travelGuide}
+            onChange={handleChange}
+            rows={4}
+          />
+        </FormSection>
+
+        {/* INFORMATION */}
+        <FormSection title="Information">
+          <FormInput
+            label="Currency"
+            name="currency"
+            value={formData.currency}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Language"
+            name="language"
+            value={formData.language}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Time Zone"
+            name="timeZone"
+            value={formData.timeZone}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Avg. Flight Time"
+            name="avgFlightTime"
+            value={formData.avgFlightTime}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Peak Travel"
+            name="peakTravel"
+            value={formData.peakTravel}
+            onChange={handleChange}
+          />
+        </FormSection>
 
         {/* WEATHER INFORMATION */}
+        <FormSection title="Weather Information">
+          <FormInput
+            label="Spring Temperature"
+            name="springTemperature"
+            value={formData.springTemperature}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Spring Info"
+            name="springInfo"
+            value={formData.springInfo}
+            onChange={handleChange}
+            rows={1}
+          />
+
+          <FormInput
+            label="Summer Temperature"
+            name="summerTemperature"
+            value={formData.summerTemperature}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Summer Info"
+            name="summerInfo"
+            value={formData.summerInfo}
+            onChange={handleChange}
+            rows={1}
+          />
+
+          <FormInput
+            label="Autumn Temperature"
+            name="autumnTemperature"
+            value={formData.autumnTemperature}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Autumn Info"
+            name="autumnInfo"
+            value={formData.autumnInfo}
+            onChange={handleChange}
+            rows={1}
+          />
+
+          <FormInput
+            label="Winter Temperature"
+            name="winterTemperature"
+            value={formData.winterTemperature}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Winter Info"
+            name="winterInfo"
+            value={formData.winterInfo}
+            onChange={handleChange}
+            rows={1}
+          />
+        </FormSection>
 
         {/* HOTELS */}
-        
+        <FormSection title="Hotels">
+          <FormTextarea
+            label="Resorts"
+            name="resorts"
+            value={formData.resorts}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Top Hotel"
+            name="topHotel"
+            value={formData.topHotel}
+            onChange={handleChange}
+          />
+        </FormSection>
 
         {/* SEO */}
-        
+        <FormSection title="SEO Meta Data Information">
+          <FormInput
+            label="Meta Title"
+            name="metaTitle"
+            value={formData.metaTitle}
+            onChange={handleChange}
+          />
+
+          <FormTextarea
+            label="Meta Keywords"
+            name="metaKeywords"
+            value={formData.metaKeywords}
+            onChange={handleChange}
+            rows={2}
+          />
+
+          <FormTextarea
+            label="Meta Description (Max 300 Characters)"
+            name="metaDescription"
+            value={formData.metaDescription}
+            onChange={handleChange}
+            rows={2}
+          />
+        </FormSection>
+
         {/* ACTIONS */}
         <div className="flex justify-end gap-3 border-t border-stone-200 bg-stone-50 px-6 py-4">
           <button

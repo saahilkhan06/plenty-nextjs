@@ -1,8 +1,18 @@
 "use client";
 
 import AdminTable from "../../components/AdminTable";
+import NewSubDestinationForm from "./NewSubDestiantionForm";
+import { useAdminCrud } from "../../hooks/useAdminCrud";
 
-const destinations = [
+type SubDestination = {
+  id: number;
+  destination: string;
+  airportCode: string;
+  image: string;
+  status: string;
+};
+
+const initialDestinations: SubDestination[] = [
   {
     id: 1,
     destination: "Maldives",
@@ -27,20 +37,57 @@ const destinations = [
       "https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=800&q=80",
     status: "Active",
   },
+  {
+    id: 4,
+    destination: "Bali",
+    airportCode: "DPS",
+    image:
+      "https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=800&q=80",
+    status: "Active",
+  },
 ];
 
-export default function SubDestinations() {
+export default function Destinations() {
+  const {
+    data: destinations,
+    showForm,
+    editingItem: editingDestination,
+    handleAdd,
+    handleEdit,
+    handleDelete,
+    handleSave,
+    handleBack,
+  } = useAdminCrud<SubDestination>({
+    initialData: initialDestinations,
+    deleteMessage: "Are you sure you want to delete this destination?",
+  });
+
+  // FORM
+  if (showForm) {
+    return (
+      <NewSubDestinationForm
+        onBack={handleBack}
+        onSave={handleSave}
+        editingDestination={editingDestination}
+      />
+    );
+  }
+
+  // TABLE
   return (
     <AdminTable
       title="Sub Destinations"
       searchPlaceholder="Search destinations..."
+      onAdd={handleAdd}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
       columns={[
         {
           key: "destination",
           label: "Destination",
         },
         {
-          key: "airportCode",
+          key: "destination",
           label: "Main Destination",
         },
         {

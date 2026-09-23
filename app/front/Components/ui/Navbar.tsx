@@ -52,7 +52,7 @@ export default function Nav() {
           const isOpen = openMenu === link.label;
 
           return (
-            <li key={link.label} className="relative cursor-pointer">
+            <li key={link.label} className=" cursor-pointer">
               {link.hasDropdown ? (
                 <button
                   type="button"
@@ -95,26 +95,26 @@ export default function Nav() {
               {isOpen && link.dropdownColumns && (
                 <div
                   className="
-                absolute
-                left-1/2
-                top-full
-                z-50
-                mt-2
-                w-[95vw]
-                -translate-x-1/2
-                max-h-[70vh]
-                overflow-y-auto
-                rounded-2xl
-                bg-white
-                py-6
-                shadow-xl
+    absolute
+    left-1/2
+    top-full
+    z-50
+    mt-2
+    -translate-x-1/2
+    w-[calc(100vw-20px)]
+    max-h-[70vh]
+    overflow-y-auto
+    rounded-2xl
+    bg-white
+    py-6
+    shadow-xl
 
-                sm:w-[90vw]
-                sm:py-8
+    sm:w-[90vw]
+    sm:py-8
 
-                lg:w-[80vw]
-                lg:max-w-[1200px]
-              "
+    lg:w-[80vw]
+    lg:max-w-300
+  "
                 >
                   <div className="mx-auto max-w-[1400px] px-4 sm:px-5">
                     <div

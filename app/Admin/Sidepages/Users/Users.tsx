@@ -81,21 +81,7 @@ export default function Users() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            className="rounded-lg border border-stone-300 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-700"
-          >
-            🖨 Print
-          </button>
-
-          <button
-            type="button"
-            className="rounded-lg border border-stone-300 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-700"
-          >
-            💾 Save
-          </button>
-        </div>
+        
       </div>
 
       {/* SEARCH */}
