@@ -136,7 +136,7 @@ export default function Footer() {
             className="h-auto w-60"
           />
           <h3 className="font-semibold">Get In Touch</h3>
-          <p className="font-semibold">📞 0203 994 7646</p>
+          <p className="font-semibold">📞 203 994 7646</p>
           <p className="font-semibold">✉️ info@plentyholidays.co.uk</p>
           <p className="font-semibold">🕐 Monday to Sunday: 8am to 11pm</p>
           <div className="flex gap-4">

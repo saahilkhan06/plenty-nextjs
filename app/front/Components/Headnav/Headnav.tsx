@@ -120,7 +120,7 @@ export default function Headnav() {
               {/* Desktop phone information */}
               <span className="hidden lg:flex flex-col text-left ml-2">
                 <span className="text-2xl font-bold leading-none">
-                  0203 994 7646
+                  203 994 7646
                 </span>
 
                 <small className="text-[13px] font-medium">
