@@ -13,7 +13,7 @@ export default function Logout() {
 
     removeAuthData();
 
-    router.push("/Login");
+    router.push("/Admin");
   };
 
   return (

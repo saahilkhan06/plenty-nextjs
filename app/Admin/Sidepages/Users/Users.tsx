@@ -68,28 +68,22 @@ export default function Users() {
 
   return (
     <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
-
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-stone-200 px-5 py-2">
         <div>
-          <h1 className="text-xl font-semibold text-stone-800">
-            User Emails
-          </h1>
+          <h1 className="text-xl font-semibold text-stone-800">User Emails</h1>
 
           <p className="mt-1 text-sm text-stone-500">
             Manage user emails here.
           </p>
         </div>
-
-        
       </div>
 
       {/* SEARCH */}
       <div className="border-b border-stone-200 px-5 py-2">
         <div className="flex items-center gap-3">
-
           {/* SEARCH FIELD */}
-          <div className="relative w-[170px]">
+          <div className="relative w-[140px]">
             <select
               value={searchBy}
               onChange={(e) => {
@@ -151,35 +145,14 @@ export default function Users() {
               "
             />
           </div>
-
-          {/* SEARCH BUTTON */}
-          <button
-            type="button"
-            className="
-              h-[44px]
-              rounded-lg
-              bg-blue-500
-              px-5
-              text-sm
-              font-medium
-              text-white
-              transition
-              hover:bg-blue-600
-            "
-          >
-            Search
-          </button>
-
         </div>
       </div>
 
       {/* TABLE */}
       <div className="overflow-x-auto">
         <table className="w-full min-w-[800px]">
-
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50">
-
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-stone-500">
                 ID
               </th>
@@ -195,7 +168,6 @@ export default function Users() {
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-stone-500">
                 Date
               </th>
-
             </tr>
           </thead>
 
@@ -211,23 +183,15 @@ export default function Users() {
                     hover:bg-stone-50
                   "
                 >
-
                   <td className="px-5 text-sm font-medium text-stone-700">
                     {user.id}
                   </td>
 
-                  <td className="px-5 text-sm text-stone-600">
-                    {user.email}
-                  </td>
+                  <td className="px-5 text-sm text-stone-600">{user.email}</td>
 
-                  <td className="px-5 text-sm text-stone-600">
-                    {user.name}
-                  </td>
+                  <td className="px-5 text-sm text-stone-600">{user.name}</td>
 
-                  <td className="px-5 text-sm text-stone-600">
-                    {user.date}
-                  </td>
-
+                  <td className="px-5 text-sm text-stone-600">{user.date}</td>
                 </tr>
               ))
             ) : (
@@ -241,7 +205,6 @@ export default function Users() {
               </tr>
             )}
           </tbody>
-
         </table>
       </div>
 
@@ -251,7 +214,6 @@ export default function Users() {
           Showing {filteredUsers.length} of {users.length}
         </span>
       </div>
-
     </div>
   );
 }

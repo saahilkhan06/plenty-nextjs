@@ -76,7 +76,7 @@ export default function OtherDestinations() {
   // TABLE
   return (
     <AdminTable
-      title="Sub Destinations"
+      title="Other Destinations"
       searchPlaceholder="Search destinations..."
       onAdd={handleAdd}
       onEdit={handleEdit}

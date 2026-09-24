@@ -20,7 +20,7 @@ import { StatCards } from "./StatCards";
 import { ActivityGraph } from "./ActivityGraph";
 import { UsageRadar } from "./UsageRadar";
 import { RecentTransactions } from "./RecentTransactions";
-import EnquiryTable from "./Enquerytable";
+// import EnquiryTable from "./Enquerytable";
 
 export const Grid = () => {
   return (
@@ -29,7 +29,7 @@ export const Grid = () => {
       <ActivityGraph />
       <UsageRadar />
       <RecentTransactions />
-      <EnquiryTable />
+      {/* <EnquiryTable /> */}
     </div>
   );
 };

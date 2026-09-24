@@ -151,31 +151,22 @@ export default function AdminLayout({
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const auth = getAuthData();
+  // useEffect(() => {
+  //   const checkAuth = () => {
+  //     const auth = getAuthData();
 
-      if (!auth?.accessToken) {
-        router.replace("/Login");
-        return;
-      }
+  //     if (!auth?.accessToken) {
+  //       router.replace("/Login");
+  //       return;
+  //     }
 
-      // Auth check finished successfully
-      setCheckingAuth(false);
-    };
+  //     // Auth check finished successfully
+  //     setCheckingAuth(false);
+  //   };
 
-    checkAuth();
-  }, [router]);
+  //   checkAuth();
+  // }, [router]);
 
-  // IMPORTANT:
-  // Do not render Admin while authentication is being checked
-  if (checkingAuth) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-slate-900">
-        <p className="text-white">Checking authentication...</p>
-      </div>
-    );
-  }
 
   return (
     <main

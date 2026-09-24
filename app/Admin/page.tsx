@@ -12,20 +12,20 @@ export default function Admin() {
 
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  useEffect(() => {
-    const auth = getAuthData();
+  // useEffect(() => {
+  //   const auth = getAuthData();
 
-    if (!auth?.accessToken) {
-      router.replace("/Login");
-      return;
-    }
+  //   if (!auth?.accessToken) {
+  //     router.replace("/Admin");
+  //     return;
+  //   }
 
-    setCheckingAuth(false);
-  }, [router]);
+  //   setCheckingAuth(false);
+  // }, [router]);
 
-  if (checkingAuth) {
-    return null;
-  }
+  // if (checkingAuth) {
+  //   return null;
+  // }
 
   return <Dashboard />;
 }
