@@ -108,7 +108,7 @@ export default function Headnavtest() {
 
             {/* Phone */}
             <Link
-              href="tel:02039947646"
+              href="tel:2039947646"
               aria-label="Call Plenty Holidays"
               className="
                 hidden

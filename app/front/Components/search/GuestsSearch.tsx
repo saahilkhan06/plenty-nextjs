@@ -147,7 +147,7 @@ export default function GuestsSearch() {
 
         <p className="mt-6 text-sm text-blue-800">
           If you would like to book more rooms, call our sales team on{" "}
-          <Link href="tel:02039947646" className="font-semibold text-blue-800">
+          <Link href="tel:2039947646" className="font-semibold text-blue-800">
             0203 994 7646
           </Link>
         </p>

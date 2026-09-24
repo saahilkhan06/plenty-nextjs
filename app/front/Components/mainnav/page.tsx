@@ -55,7 +55,7 @@ export default function Mainnav() {
           </div>
 
           <Link
-            href="tel:02039947646"
+            href="tel:2039947646"
             className="flex items-center gap-2 rounded-2xl bg-blue-900 px-5 py-2.5 font-bold text-white"
           >
             <Phone size={18} />
