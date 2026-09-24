@@ -1,5 +1,7 @@
 // // src/app/login/page.tsx
 
+import { redirect } from "next/navigation";
+
 // "use client";
 
 // import { useState } from "react";
@@ -165,3 +167,6 @@
 //     </div>
 //   );
 // }
+export default function Login (){
+  redirect("/Admin")
+}
